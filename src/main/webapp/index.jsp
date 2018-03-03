@@ -8,9 +8,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
   <head>
-    <title>$Title$</title>
+    <title>Taxi Ordering System</title>
   </head>
   <body>
-  $END$
+  <h1>Welcome to the Taxi Ordering System!</h1>
+  <h2>To get access to the system, please,
+      <a href="login">click here</a>
+      for authorization.
+  </h2><br>
+  <h2>If you have no account, please,
+      <a href="sign_up">click here</a>
+      for registration.
+  </h2><br>
   </body>
 </html>
