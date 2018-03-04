@@ -11,13 +11,19 @@
     <title>Taxi Ordering System</title>
   </head>
   <body>
+  <ul>
+      <li><a href=".">Home</a></li>
+      <li><a href="login">Sign In</a></li>
+      <li><a href="sign-up">Sign Up</a></li>
+      <li><a href="taxi-ordering">Taxi Ordering</a></li>
+  </ul>
   <h1>Welcome to the Taxi Ordering System!</h1>
   <h2>To get access to the system, please,
       <a href="login">click here</a>
       for authorization.
-  </h2><br>
+  </h2>
   <h2>If you have no account, please,
-      <a href="sign_up">click here</a>
+      <a href="sign-up">click here</a>
       for registration.
   </h2><br>
   </body>
