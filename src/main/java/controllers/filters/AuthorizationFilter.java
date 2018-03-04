@@ -1,11 +1,16 @@
 package controllers.filters;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class WhiteList implements Filter {
+/**
+ * Filters the user requests depending on user authorization in the system.
+ */
+@WebFilter(urlPatterns = {"/taxi-ordering"})
+public class AuthorizationFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
@@ -16,7 +21,7 @@ public class WhiteList implements Filter {
 
         if (userLogin != null) {
             filterChain.doFilter(servletRequest, servletResponse);
-        } else{
+        } else {
             ((HttpServletResponse) servletResponse)
                     .sendRedirect(((HttpServletRequest) servletRequest).getContextPath() + "/");
         }
