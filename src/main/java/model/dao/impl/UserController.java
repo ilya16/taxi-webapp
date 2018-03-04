@@ -4,6 +4,7 @@ import model.dao.api.UserDAO;
 import model.beans.User;
 import model.utils.DataSourceFactory;
 import model.utils.Encryptor;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,9 +15,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class UserController implements UserDAO {
-//    static {
-//        PropertyConfigurator.configure(LoginServlet.class.getClassLoader().getResource("log4j.properties"));
-//    }
+    static {
+        PropertyConfigurator.configure(UserController.class.getClassLoader().getResource("log4j.properties"));
+    }
 
     private static final Logger LOGGER = LogManager.getLogger(UserController.class);
 
@@ -30,8 +31,8 @@ public class UserController implements UserDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, login);
             ResultSet resultSet = statement.executeQuery();
-
             resultSet.next();
+
             /* Passwords match check */
             if (Encryptor.checkPass(password, resultSet.getString("password"))) {
                 user = new User(resultSet.getLong("id"), resultSet.getString("login"),

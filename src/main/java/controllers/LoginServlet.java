@@ -1,5 +1,6 @@
 package controllers;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.impl.UserServiceImpl;
@@ -13,9 +14,9 @@ import java.io.IOException;
 
 @WebServlet(name = "login", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
-//    static {
-//        PropertyConfigurator.configure(LoginServlet.class.getClassLoader().getResource("log4j.properties"));
-//    }
+    static {
+        PropertyConfigurator.configure(LoginServlet.class.getClassLoader().getResource("log4j.properties"));
+    }
 
     private static final Logger LOGGER = LogManager.getLogger(LoginServlet.class);
 
@@ -42,7 +43,6 @@ public class LoginServlet extends HttpServlet {
         } else {
             req.setAttribute("error", "Incorrect login/password pair. Please, try again.");
             req.getRequestDispatcher("/login.jsp").forward(req, resp);
-//            resp.sendRedirect(req.getContextPath() + "/login");
         }
     }
 }

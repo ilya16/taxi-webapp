@@ -2,14 +2,15 @@ package services.impl;
 
 import model.dao.impl.UserController;
 import model.beans.User;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.api.UserService;
 
 public class UserServiceImpl implements UserService {
-//    static {
-//        PropertyConfigurator.configure(LoginServlet.class.getClassLoader().getResource("log4j.properties"));
-//    }
+    static {
+        PropertyConfigurator.configure(UserServiceImpl.class.getClassLoader().getResource("log4j.properties"));
+    }
 
     private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
@@ -19,7 +20,6 @@ public class UserServiceImpl implements UserService {
     public User auth(String login, String password) {
         User user = userController.findUserByLoginAndPassword(login, password);
 
-        System.out.println(user);
         LOGGER.debug("Got user: " + user);
 
         if ((user != null) && user.isBlocked()) {

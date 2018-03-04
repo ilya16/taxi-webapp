@@ -1,5 +1,6 @@
 package controllers;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.impl.UserServiceImpl;
@@ -13,9 +14,9 @@ import java.io.IOException;
 
 @WebServlet(name = "sign-up", urlPatterns = {"/sign-up"})
 public class RegistrationServlet extends HttpServlet {
-    //    static {
-//        PropertyConfigurator.configure(LoginServlet.class.getClassLoader().getResource("log4j.properties"));
-//    }
+    static {
+        PropertyConfigurator.configure(LoginServlet.class.getClassLoader().getResource("log4j.properties"));
+    }
 
     private static final Logger LOGGER = LogManager.getLogger(RegistrationServlet.class);
 
@@ -29,7 +30,7 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOGGER.info("RegistrationServlet doPost");
+        LOGGER.debug("RegistrationServlet doPost");
 
         String login = req.getParameter("login");
         String firstName = req.getParameter("firstName");
@@ -44,8 +45,6 @@ public class RegistrationServlet extends HttpServlet {
             req.getSession().setAttribute("userLogin", login);
             req.setAttribute("responseMessage", "Registration was successful! Sign inn to the System below:");
             req.getRequestDispatcher("/login.jsp").forward(req, resp);
-//
-//            resp.sendRedirect(req.getContextPath() + "/login");
         } else {
             req.setAttribute("responseMessage", String.format("Login \"%s\" is already taken, enter another one", login));
             req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);

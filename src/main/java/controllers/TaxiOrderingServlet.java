@@ -1,5 +1,6 @@
 package controllers;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +13,9 @@ import java.io.IOException;
 
 @WebServlet(name = "taxi-ordering", urlPatterns = {"/taxi-ordering"})
 public class TaxiOrderingServlet extends HttpServlet {
+    static {
+        PropertyConfigurator.configure(TaxiOrderingServlet.class.getClassLoader().getResource("log4j.properties"));
+    }
 
     private static final Logger LOGGER = LogManager.getLogger(TaxiOrderingServlet.class);
 
