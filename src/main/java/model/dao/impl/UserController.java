@@ -37,7 +37,8 @@ public class UserController implements UserDAO {
             if (Encryptor.checkPass(password, resultSet.getString("password"))) {
                 user = new User(resultSet.getLong("id"), resultSet.getString("login"),
                         resultSet.getString("first_name"), resultSet.getString("last_name"),
-                        resultSet.getString("password"), resultSet.getBoolean("is_blocked"));
+                        resultSet.getString("password"), resultSet.getString("phone_number"),
+                        resultSet.getTimestamp("registration_date"), resultSet.getBoolean("is_blocked"));
 
             } else {
                 LOGGER.debug("Password is not correct");
@@ -94,7 +95,8 @@ public class UserController implements UserDAO {
             resultSet.next();
             user = new User(resultSet.getLong("id"), resultSet.getString("login"),
                     resultSet.getString("first_name"), resultSet.getString("last_name"),
-                    resultSet.getString("password"), resultSet.getBoolean("is_blocked"));
+                    resultSet.getString("password"), resultSet.getString("phone_number"),
+                    resultSet.getTimestamp("registration_date"), resultSet.getBoolean("is_blocked"));
 
             resultSet.close();
             statement.close();

@@ -1,6 +1,7 @@
 package model.beans;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -10,14 +11,19 @@ public class User implements Serializable {
     private String firstName;
     private String lastName;
     private String password;
+    private String phoneNumber;
+    private Timestamp registrationDate;
     private boolean isBlocked;
 
-    public User(long id, String login, String firstName, String lastName, String password, boolean isBlocked) {
+    public User(long id, String login, String firstName, String lastName,
+                String password, String phoneNumber, Timestamp registrationDate, boolean isBlocked) {
         this.id = id;
         this.login = login;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.registrationDate = registrationDate;
         this.isBlocked = isBlocked;
     }
 
@@ -61,6 +67,22 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Timestamp getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Timestamp registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
     public boolean isBlocked() {
         return isBlocked;
     }
@@ -69,15 +91,17 @@ public class User implements Serializable {
         isBlocked = blocked;
     }
 
-
     @Override
     public String toString() {
-        return "User {" +
+        return "User{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", isBlocked='" + isBlocked + '\'' +
+                ", password='" + password + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", registrationDate=" + registrationDate +
+                ", isBlocked=" + isBlocked +
                 '}';
     }
 }
