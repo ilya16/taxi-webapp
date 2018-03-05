@@ -16,6 +16,7 @@
       <li><a href="login">Sign In</a></li>
       <li><a href="sign-up">Sign Up</a></li>
       <li><a href="taxi-ordering">Taxi Ordering</a></li>
+      <li><a href="logout">Log Out</a></li>
   </ul>
   <h1>Welcome to the Taxi Ordering System!</h1>
   <h2>To get access to the system, please,

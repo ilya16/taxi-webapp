@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.impl.UserServiceImpl;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -40,13 +41,13 @@ public class RegistrationServlet extends HttpServlet {
 
         if (!password.equals(passwordConfirm)) {
             req.setAttribute("responseMessage", "Passwords do not match");
+            req.getSession().setAttribute("responseMessage", "Passwords do not match");
             req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
         } else if (userService.register(login, firstName, lastName, password) != null) {
-            req.getSession().setAttribute("userLogin", login);
-            req.setAttribute("responseMessage", "Registration was successful! Sign inn to the System below:");
-            req.getRequestDispatcher("/login.jsp").forward(req, resp);
+            req.getSession().setAttribute("responseMessage", "Registration was successful! Sign into the System below:");
+            resp.sendRedirect("/login");
         } else {
-            req.setAttribute("responseMessage", String.format("Login \"%s\" is already taken, enter another one", login));
+            req.getSession().setAttribute("responseMessage", String.format("Login \"%s\" is already taken, enter another one", login));
             req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
         }
     }
