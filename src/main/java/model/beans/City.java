@@ -1,27 +1,28 @@
 package model.beans;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class City implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private long id;
+    private int id;
     private String name;
     private String region;
     private boolean isUnsupported;
 
-    public City(long id, String name, String region, boolean isUnsupported) {
+    public City(int id, String name, String region, boolean isUnsupported) {
         this.id = id;
         this.name = name;
         this.region = region;
         this.isUnsupported = isUnsupported;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -47,6 +48,22 @@ public class City implements Serializable {
 
     public void setUnsupported(boolean unsupported) {
         isUnsupported = unsupported;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        City city = (City) o;
+        return id == city.id &&
+                isUnsupported == city.isUnsupported &&
+                Objects.equals(name, city.name) &&
+                Objects.equals(region, city.region);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, region, isUnsupported);
     }
 
     @Override

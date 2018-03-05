@@ -5,17 +5,17 @@ import java.io.Serializable;
 public class Car implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private long id;
+    private int id;
     private String serialNumber;
     private String model;
     private String color;
-    private long driverId;
+    private int driverId;
     private Driver driver;
     private boolean hasChildSeat;
     private boolean isBlocked;
 
-    public Car(long id, String serialNumber, String model, String color,
-               long driverId, boolean hasChildSeat, boolean isBlocked) {
+    public Car(int id, String serialNumber, String model, String color,
+               int driverId, boolean hasChildSeat, boolean isBlocked) {
         this.id = id;
         this.serialNumber = serialNumber;
         this.model = model;
@@ -25,7 +25,7 @@ public class Car implements Serializable {
         this.isBlocked = isBlocked;
     }
 
-    public Car(long id, String serialNumber, String model, String color,
+    public Car(int id, String serialNumber, String model, String color,
                Driver driver, boolean hasChildSeat, boolean isBlocked) {
         this.id = id;
         this.serialNumber = serialNumber;
@@ -37,11 +37,11 @@ public class Car implements Serializable {
         this.isBlocked = isBlocked;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -69,11 +69,11 @@ public class Car implements Serializable {
         this.color = color;
     }
 
-    public long getDriverId() {
+    public int getDriverId() {
         return driverId;
     }
 
-    public void setDriverId(long driverId) {
+    public void setDriverId(int driverId) {
         this.driverId = driverId;
     }
 

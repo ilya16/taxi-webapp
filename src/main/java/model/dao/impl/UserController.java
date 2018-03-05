@@ -35,7 +35,7 @@ public class UserController implements UserDAO {
 
             /* Passwords match check */
             if (Encryptor.checkPass(password, resultSet.getString("password"))) {
-                user = new User(resultSet.getLong("id"), resultSet.getString("login"),
+                user = new User(resultSet.getInt("id"), resultSet.getString("login"),
                         resultSet.getString("first_name"), resultSet.getString("last_name"),
                         resultSet.getString("password"), resultSet.getString("phone_number"),
                         resultSet.getTimestamp("registration_date"), resultSet.getBoolean("is_blocked"));
@@ -93,7 +93,7 @@ public class UserController implements UserDAO {
             ResultSet resultSet = statement.executeQuery();
 
             resultSet.next();
-            user = new User(resultSet.getLong("id"), resultSet.getString("login"),
+            user = new User(resultSet.getInt("id"), resultSet.getString("login"),
                     resultSet.getString("first_name"), resultSet.getString("last_name"),
                     resultSet.getString("password"), resultSet.getString("phone_number"),
                     resultSet.getTimestamp("registration_date"), resultSet.getBoolean("is_blocked"));

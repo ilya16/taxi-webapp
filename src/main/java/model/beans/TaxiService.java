@@ -2,17 +2,17 @@ package model.beans;
 
 import java.io.Serializable;
 
-public class Service implements Serializable {
+public class TaxiService implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private long id;
-    private long cityId;
+    private int id;
+    private int cityId;
     private City city;
     private String serviceType;
     private int baseRate;
     private boolean isRemoved;
 
-    public Service(long id, long cityId, String serviceType, int baseRate, boolean isRemoved) {
+    public TaxiService(int id, int cityId, String serviceType, int baseRate, boolean isRemoved) {
         this.id = id;
         this.cityId = cityId;
         this.serviceType = serviceType;
@@ -20,7 +20,7 @@ public class Service implements Serializable {
         this.isRemoved = isRemoved;
     }
 
-    public Service(long id, City city, String serviceType, int baseRate, boolean isRemoved) {
+    public TaxiService(int id, City city, String serviceType, int baseRate, boolean isRemoved) {
         this.id = id;
         this.cityId = city.getId();
         this.city = city;
@@ -29,19 +29,19 @@ public class Service implements Serializable {
         this.isRemoved = isRemoved;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public long getCityId() {
+    public int getCityId() {
         return cityId;
     }
 
-    public void setCityId(long cityId) {
+    public void setCityId(int cityId) {
         this.cityId = cityId;
     }
 
@@ -79,7 +79,7 @@ public class Service implements Serializable {
 
     @Override
     public String toString() {
-        return "Service{" +
+        return "TaxiService{" +
                 "id=" + id +
                 ", cityId=" + cityId +
                 ", city=" + city +

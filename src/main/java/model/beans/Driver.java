@@ -5,13 +5,13 @@ import java.io.Serializable;
 public class Driver implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private long id;
+    private int id;
     private String firstName;
     private String lastName;
     private short age;
     private boolean isBlocked;
 
-    public Driver(long id, String firstName, String lastName, short age, boolean isBlocked) {
+    public Driver(int id, String firstName, String lastName, short age, boolean isBlocked) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -19,11 +19,11 @@ public class Driver implements Serializable {
         this.isBlocked = isBlocked;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -6,13 +6,13 @@ import java.sql.Timestamp;
 public class Ride implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private long id;
-    private long userId;
+    private int id;
+    private int userId;
     private User user;
-    private long carId;
+    private int carId;
     private Car car;
-    private long serviceId;
-    private Service service;
+    private int serviceId;
+    private TaxiService taxiService;
     private Timestamp orderTime;
     private String locationFrom;
     private String locationTo;
@@ -23,7 +23,7 @@ public class Ride implements Serializable {
     private String orderComments;
     private String status;
 
-    public Ride(long id, long userId, long carId, long serviceId, Timestamp orderTime,
+    public Ride(int id, int userId, int carId, int serviceId, Timestamp orderTime,
                 String locationFrom, String locationTo, Timestamp timeStart, Timestamp timeEnd,
                 int price, int rating, String orderComments, String status) {
         this.id = id;
@@ -41,13 +41,13 @@ public class Ride implements Serializable {
         this.status = status;
     }
 
-    public Ride(long id, User user, Car car, Service service, Timestamp orderTime,
+    public Ride(int id, User user, Car car, TaxiService taxiService, Timestamp orderTime,
                 String locationFrom, String locationTo, Timestamp timeStart, Timestamp timeEnd,
                 int price, int rating, String orderComments, String status) {
         this.id = id;
         this.user = user;
         this.car = car;
-        this.service = service;
+        this.taxiService = taxiService;
         this.orderTime = orderTime;
         this.locationFrom = locationFrom;
         this.locationTo = locationTo;
@@ -59,19 +59,19 @@ public class Ride implements Serializable {
         this.status = status;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -83,11 +83,11 @@ public class Ride implements Serializable {
         this.user = user;
     }
 
-    public long getCarId() {
+    public int getCarId() {
         return carId;
     }
 
-    public void setCarId(long carId) {
+    public void setCarId(int carId) {
         this.carId = carId;
     }
 
@@ -99,20 +99,20 @@ public class Ride implements Serializable {
         this.car = car;
     }
 
-    public long getServiceId() {
+    public int getServiceId() {
         return serviceId;
     }
 
-    public void setServiceId(long serviceId) {
+    public void setServiceId(int serviceId) {
         this.serviceId = serviceId;
     }
 
-    public Service getService() {
-        return service;
+    public TaxiService getTaxiService() {
+        return taxiService;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setTaxiService(TaxiService taxiService) {
+        this.taxiService = taxiService;
     }
 
     public Timestamp getOrderTime() {
@@ -196,7 +196,7 @@ public class Ride implements Serializable {
                 ", carId=" + carId +
                 ", car=" + car +
                 ", serviceId=" + serviceId +
-                ", service=" + service +
+                ", taxiService=" + taxiService +
                 ", orderTime=" + orderTime +
                 ", locationFrom='" + locationFrom + '\'' +
                 ", locationTo='" + locationTo + '\'' +

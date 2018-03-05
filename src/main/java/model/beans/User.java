@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private long id;
+    private int id;
     private String login;
     private String firstName;
     private String lastName;
@@ -15,7 +15,7 @@ public class User implements Serializable {
     private Timestamp registrationDate;
     private boolean isBlocked;
 
-    public User(long id, String login, String firstName, String lastName,
+    public User(int id, String login, String firstName, String lastName,
                 String password, String phoneNumber, Timestamp registrationDate, boolean isBlocked) {
         this.id = id;
         this.login = login;
@@ -27,11 +27,11 @@ public class User implements Serializable {
         this.isBlocked = isBlocked;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
