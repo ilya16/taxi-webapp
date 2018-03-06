@@ -21,28 +21,33 @@
     </ul>
     <h3>Order the taxi below:</h3>
     <h4>Fill the parameters and the system will show you the list of possible options</h4>
+    <p>${sessionScope.responseMessage}</p>
+    <c:if test="${sessionScope.orderSuccess}">
+        <p>You can check the order status in your account <a href="/order-history">history</a></p>
+    </c:if>
+    <c:remove var="responseMessage" scope="session" />
+    <c:remove var="orderSuccess" scope="session" />
     <form method="post">
-        City:
         <select name="city" id="city">
+            <option value="0">Choose city: </option>
             <c:forEach items="${requestScope.cityServices}" var="elem">
-                <option value="${elem.key.id}" selected>${elem.key.name}</option>
+                <option value="${elem.key.id}">${elem.key.name}</option>
             </c:forEach>
-        </select><br>
+        </select>Save choice: <input type="checkbox" name="saveCity" checked/><br>
         From: <input type="text" name="locationFrom"/>
         To: <input type="text" name="locationTo"/><br>
         Phone: <input type="text" name="phoneNumber"/>
-        Save number: <input type="checkbox" name="saveNumber" checked/><br>
+        Save number: <input type="checkbox" name="savePhoneNumber" checked/><br>
         <div id="select_boxes">Service: </div>
         Child Seat: <input type="checkbox" name="childSeat"/><br>
         Comments: <textarea name="orderComments" rows="8" cols="64"></textarea><br>
-        <input type="submit" value="Order Taxi"/>
+        <input type="submit" id="place-order" value="Order Taxi" disabled/>
 </form>
 </body>
 </html>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript">
-
     var taxiServices = {};
 
     <c:forEach items="${requestScope.cityServices}" var="elem">
@@ -56,6 +61,7 @@
     $(document).ready(function(){
         $('#city').on('change', function(){
             var current = $(this).val();
+            $('#place-order').prop('disabled', $(this).val() === 0);
             $('#select_boxes').html('<select name="service" id="service"></select>');
             var options = '';
             $.each(taxiServices[current].values, function(index, values){
@@ -64,6 +70,5 @@
             });
             $('#service').html(options);
         });
-
     });
 </script>

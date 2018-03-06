@@ -1,7 +1,7 @@
 package model.dao.impl;
 
-import model.beans.City;
-import model.dao.api.CityDAO;
+import model.beans.Car;
+import model.dao.api.CarDAO;
 import model.utils.DataSourceFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
@@ -14,22 +14,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CityController implements CityDAO {
+public class CarController implements CarDAO {
     static {
-        PropertyConfigurator.configure(CityController.class.getClassLoader().getResource("log4j.properties"));
+        PropertyConfigurator.configure(CarController.class.getClassLoader().getResource("log4j.properties"));
     }
 
-    private static final Logger LOGGER = LogManager.getLogger(CityController.class);
+    private static final Logger LOGGER = LogManager.getLogger(CarController.class);
 
     @Override
-    public City getEntityById(Integer id) {
+    public Car getEntityById(Integer id) {
         return null;
     }
 
     @Override
-    public List<City> getAll() {
-        List<City> cities = new ArrayList<>();
-        String sql = "SELECT * FROM cities;";
+    public List<Car> getAll() {
+        List<Car> cars = new ArrayList<>();
+        String sql = "SELECT * FROM cars;";
 
         try {
             Connection connection = DataSourceFactory.getDataSource().getConnection();
@@ -37,8 +37,10 @@ public class CityController implements CityDAO {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                cities.add(new City(resultSet.getInt("id"), resultSet.getString("name"),
-                        resultSet.getString("region"), resultSet.getBoolean("is_unsupported")));
+                cars.add(new Car(resultSet.getInt("id"), resultSet.getString("serial_number"),
+                        resultSet.getString("model"), resultSet.getString("color"),
+                        resultSet.getInt("driver_id"), resultSet.getBoolean("has_child_seat"),
+                        resultSet.getBoolean("is_blocked")));
             }
 
             resultSet.close();
@@ -48,16 +50,16 @@ public class CityController implements CityDAO {
             LOGGER.error(e);
         }
 
-        return cities;
+        return cars;
     }
 
     @Override
-    public Integer insert(City entity) {
+    public Integer insert(Car entity) {
         return null;
     }
 
     @Override
-    public int update(City entity) {
+    public int update(Car entity) {
         return 0;
     }
 
@@ -67,7 +69,7 @@ public class CityController implements CityDAO {
     }
 
     @Override
-    public City save(City entity) {
+    public Car save(Car entity) {
         return null;
     }
 }

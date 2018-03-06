@@ -1,5 +1,6 @@
 package controllers;
 
+import model.beans.User;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,8 +38,10 @@ public class LoginServlet extends HttpServlet {
 
         LOGGER.debug("Login servlet");
 
-        if (userService.auth(login, password) != null) {
+        User user = userService.auth(login, password);
+        if (user != null) {
             req.getSession().setAttribute("userLogin", login);
+            req.getSession().setAttribute("userId", user.getId());
             resp.sendRedirect(req.getContextPath() + "/taxi-ordering");
         } else {
             req.getSession().setAttribute("responseMessage", "Incorrect login/password pair. Please, try again.");

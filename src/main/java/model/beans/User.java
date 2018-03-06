@@ -12,17 +12,19 @@ public class User implements Serializable {
     private String lastName;
     private String password;
     private String phoneNumber;
+    private int cityId;
     private Timestamp registrationDate;
     private boolean isBlocked;
 
-    public User(int id, String login, String firstName, String lastName,
-                String password, String phoneNumber, Timestamp registrationDate, boolean isBlocked) {
+    public User(int id, String login, String firstName, String lastName, String password,
+                String phoneNumber, int cityId, Timestamp registrationDate, boolean isBlocked) {
         this.id = id;
         this.login = login;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.cityId = cityId;
         this.registrationDate = registrationDate;
         this.isBlocked = isBlocked;
     }
@@ -75,6 +77,14 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
+    public int getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(int cityId) {
+        this.cityId = cityId;
+    }
+
     public Timestamp getRegistrationDate() {
         return registrationDate;
     }
@@ -100,6 +110,7 @@ public class User implements Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", cityId=" + cityId +
                 ", registrationDate=" + registrationDate +
                 ", isBlocked=" + isBlocked +
                 '}';

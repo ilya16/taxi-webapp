@@ -38,7 +38,8 @@ public class UserController implements UserDAO {
                 user = new User(resultSet.getInt("id"), resultSet.getString("login"),
                         resultSet.getString("first_name"), resultSet.getString("last_name"),
                         resultSet.getString("password"), resultSet.getString("phone_number"),
-                        resultSet.getTimestamp("registration_date"), resultSet.getBoolean("is_blocked"));
+                        resultSet.getInt("city_id"), resultSet.getTimestamp("registration_date"),
+                        resultSet.getBoolean("is_blocked"));
 
             } else {
                 LOGGER.debug("Password is not correct");
@@ -89,14 +90,15 @@ public class UserController implements UserDAO {
         try {
             Connection connection = DataSourceFactory.getDataSource().getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, id.toString());
+            statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
 
             resultSet.next();
             user = new User(resultSet.getInt("id"), resultSet.getString("login"),
                     resultSet.getString("first_name"), resultSet.getString("last_name"),
                     resultSet.getString("password"), resultSet.getString("phone_number"),
-                    resultSet.getTimestamp("registration_date"), resultSet.getBoolean("is_blocked"));
+                    resultSet.getInt("city_id"), resultSet.getTimestamp("registration_date"),
+                    resultSet.getBoolean("is_blocked"));
 
             resultSet.close();
             statement.close();
@@ -119,8 +121,33 @@ public class UserController implements UserDAO {
     }
 
     @Override
-    public boolean update(User entity) {
-        return false;
+    public int update(User user) {
+        int count = 0;
+
+        if (user == null) {
+            return count;
+        }
+
+        String sql = "UPDATE users SET first_name = ?, last_name = ?, " +
+                "phone_number = ?, city_id = ? WHERE id = ?;";
+
+        try {
+            Connection connection = DataSourceFactory.getDataSource().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, user.getFirstName());
+            preparedStatement.setString(2, user.getLastName());
+            preparedStatement.setString(3, user.getPhoneNumber());
+            preparedStatement.setInt(4, user.getCityId());
+            preparedStatement.setInt(5, user.getId());
+
+            count = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 
     @Override

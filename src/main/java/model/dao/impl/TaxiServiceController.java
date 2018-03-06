@@ -26,7 +26,28 @@ public class TaxiServiceController implements TaxiServiceDAO {
 
     @Override
     public TaxiService getEntityById(Integer id) {
-        return null;
+        TaxiService taxiService = null;
+        String sql = "SELECT * FROM services WHERE id = ?;";
+
+        try {
+            Connection connection = DataSourceFactory.getDataSource().getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            resultSet.next();
+            taxiService = new TaxiService(resultSet.getInt("id"), resultSet.getInt("city_id"),
+                    resultSet.getString("service_type"), resultSet.getInt("base_rate"),
+                    resultSet.getBoolean("is_removed"));
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            LOGGER.error(e);
+        }
+
+        return taxiService;
     }
 
     @Override
@@ -74,8 +95,8 @@ public class TaxiServiceController implements TaxiServiceDAO {
     }
 
     @Override
-    public boolean update(TaxiService entity) {
-        return false;
+    public int update(TaxiService entity) {
+        return 0;
     }
 
     @Override

@@ -11,7 +11,7 @@ public class Ride implements Serializable {
     private User user;
     private int carId;
     private Car car;
-    private int serviceId;
+    private int taxiServiceId;
     private TaxiService taxiService;
     private Timestamp orderTime;
     private String locationFrom;
@@ -23,13 +23,16 @@ public class Ride implements Serializable {
     private String orderComments;
     private String status;
 
-    public Ride(int id, int userId, int carId, int serviceId, Timestamp orderTime,
+    public Ride() {
+    }
+
+    public Ride(int id, int userId, int carId, int taxiServiceId, Timestamp orderTime,
                 String locationFrom, String locationTo, Timestamp timeStart, Timestamp timeEnd,
                 int price, int rating, String orderComments, String status) {
         this.id = id;
         this.userId = userId;
         this.carId = carId;
-        this.serviceId = serviceId;
+        this.taxiServiceId = taxiServiceId;
         this.orderTime = orderTime;
         this.locationFrom = locationFrom;
         this.locationTo = locationTo;
@@ -99,12 +102,12 @@ public class Ride implements Serializable {
         this.car = car;
     }
 
-    public int getServiceId() {
-        return serviceId;
+    public int getTaxiServiceId() {
+        return taxiServiceId;
     }
 
-    public void setServiceId(int serviceId) {
-        this.serviceId = serviceId;
+    public void setTaxiServiceId(int taxiServiceId) {
+        this.taxiServiceId = taxiServiceId;
     }
 
     public TaxiService getTaxiService() {
@@ -195,7 +198,7 @@ public class Ride implements Serializable {
                 ", user=" + user +
                 ", carId=" + carId +
                 ", car=" + car +
-                ", serviceId=" + serviceId +
+                ", taxiServiceId=" + taxiServiceId +
                 ", taxiService=" + taxiService +
                 ", orderTime=" + orderTime +
                 ", locationFrom='" + locationFrom + '\'' +

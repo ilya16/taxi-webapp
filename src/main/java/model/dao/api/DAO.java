@@ -10,7 +10,7 @@ public interface DAO<E, K> {
 
     K insert(E entity);
 
-    boolean update(E entity);
+    int update(E entity);
 
     boolean delete(K id);
 
