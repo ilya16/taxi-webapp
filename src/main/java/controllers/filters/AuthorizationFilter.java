@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Filters the user requests depending on user authorization in the system.
  */
-@WebFilter(urlPatterns = {"/taxi-ordering"})
+@WebFilter(urlPatterns = {"/taxi-ordering", "/order-history"})
 public class AuthorizationFilter implements Filter {
 
     @Override
@@ -23,7 +23,7 @@ public class AuthorizationFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             ((HttpServletResponse) servletResponse)
-                    .sendRedirect(((HttpServletRequest) servletRequest).getContextPath() + "/");
+                    .sendRedirect(((HttpServletRequest) servletRequest).getContextPath() + "/login");
         }
     }
 

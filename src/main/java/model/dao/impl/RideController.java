@@ -1,8 +1,7 @@
 package model.dao.impl;
 
-import model.beans.Car;
+import model.beans.*;
 import model.beans.Driver;
-import model.beans.Ride;
 import model.dao.api.RideDAO;
 import model.utils.DataSourceFactory;
 import org.apache.log4j.PropertyConfigurator;
@@ -25,13 +24,13 @@ public class RideController implements RideDAO {
         LOGGER.info("Getting all user rides");
 
         List<Ride> rides = new ArrayList<>();
-         String sql = "SELECT * FROM rides r WHERE user_id = ? ORDER BY r.id ASC;";
-//        String sql = "SELECT *, c.is_blocked AS car_is_blocked, d.is_blocked AS driver_is_blocked FROM rides r\n" +
-//                " JOIN cars c ON r.car_id = c.id\n" +
-//                " JOIN drivers d ON c.driver_id = d.id\n" +
-//                " JOIN services s ON r.service_id = s.id\n" +
-//                " JOIN cities ct ON s.city_id = ct.id\n" +
-//                " WHERE user_id = ? ORDER BY r.id ASC;";
+//         String sql = "SELECT * FROM rides r WHERE user_id = ? ORDER BY r.id ASC;";
+        String sql = "SELECT *, c.is_blocked AS car_is_blocked, d.is_blocked AS driver_is_blocked FROM rides r\n" +
+                " JOIN cars c ON r.car_id = c.id\n" +
+                " JOIN drivers d ON c.driver_id = d.id\n" +
+                " JOIN services s ON r.service_id = s.id\n" +
+                " JOIN cities ct ON s.city_id = ct.id\n" +
+                " WHERE user_id = ? ORDER BY r.id ASC;";
 
         try {
             Connection connection = DataSourceFactory.getDataSource().getConnection();
@@ -40,23 +39,54 @@ public class RideController implements RideDAO {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-//                Driver driver
-//                        = new Driver(resultSet.getInt("drived_id"), resultSet.getString("first_name"),
-//                        resultSet.getString("last_name"), resultSet.getByte("age"),
-//                        resultSet.getBoolean("driver_is_blocked"));
-//                Car car
-//                        = new Car(resultSet.getInt("car_id"), resultSet.getString("serial_number"),
-//                        resultSet.getString("model"), resultSet.getString("color"), driver,
-//                        resultSet.getBoolean("has_child_seat"), resultSet.getBoolean("car_is_blocked"));
-//
-                Ride ride
-                        = new Ride(resultSet.getInt("id"), resultSet.getInt("user_id"),
-                        resultSet.getInt("car_id"), resultSet.getInt("service_id"),
-                        resultSet.getTimestamp("order_time"), resultSet.getString("location_from"),
-                        resultSet.getString("location_to"), resultSet.getTimestamp("time_start"),
-                        resultSet.getTimestamp("time_end"), resultSet.getInt("price"),
-                        resultSet.getInt("rating"), resultSet.getString("order_comments"),
-                        resultSet.getString("status"));
+                Driver driver = new Driver(
+                        resultSet.getInt("driver_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getByte("age"),
+                        resultSet.getBoolean("driver_is_blocked")
+                );
+
+                Car car = new Car(
+                        resultSet.getInt("car_id"),
+                        resultSet.getString("serial_number"),
+                        resultSet.getString("model"),
+                        resultSet.getString("color"),
+                        driver,
+                        resultSet.getBoolean("has_child_seat"),
+                        resultSet.getBoolean("car_is_blocked")
+                );
+
+                City city = new City(
+                        resultSet.getInt("city_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("region"),
+                        resultSet.getBoolean("is_unsupported")
+                );
+
+                TaxiService taxiService = new TaxiService(
+                        resultSet.getInt("service_id"),
+                        city,
+                        resultSet.getString("service_type"),
+                        resultSet.getInt("base_rate"),
+                        resultSet.getBoolean("is_removed")
+                );
+
+                Ride ride = new Ride(
+                        resultSet.getInt("id"),
+                        resultSet.getInt("user_id"),
+                        car,
+                        taxiService,
+                        resultSet.getTimestamp("order_time"),
+                        resultSet.getString("location_from"),
+                        resultSet.getString("location_to"),
+                        resultSet.getTimestamp("time_start"),
+                        resultSet.getTimestamp("time_end"),
+                        resultSet.getInt("price"),
+                        resultSet.getInt("rating"),
+                        resultSet.getString("order_comments"),
+                        resultSet.getString("status")
+                );
 
                 rides.add(ride);
             }

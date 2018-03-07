@@ -98,12 +98,10 @@ public class TaxiOrderingServiceImpl implements TaxiOrderingService {
     }
 
     @Override
-    public Ride getLastRide(Integer userId) {
-        LOGGER.info(String.format("Getting last ride of a user with id=%d", userId));
+    public List<Ride> getAllUserRides(Integer userId) {
+        LOGGER.info(String.format("Getting all ride of a user with id=%d", userId));
 
-        List<Ride> userRides = rideController.getAllUserRides(userId);
-        if (userRides.size() == 0) return null;
-        return userRides.get(userRides.size() - 1);
+        return rideController.getAllUserRides(userId);
     }
 
     /**

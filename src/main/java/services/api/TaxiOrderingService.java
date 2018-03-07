@@ -13,5 +13,5 @@ public interface TaxiOrderingService {
                     String childSeat, String orderComments);
     List<City> getAllCities(boolean onlyActive);
     Map<City, List<TaxiService>> getAllCityTaxiServices(List<City> cities, boolean onlyActive);
-    Ride getLastRide(Integer userId);
+    List<Ride> getAllUserRides(Integer userId);
 }
