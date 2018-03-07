@@ -22,6 +22,10 @@ public class AuthorizationFilter implements Filter {
         if (userLogin != null) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
+            ((HttpServletRequest) servletRequest).getSession().setAttribute(
+                    "responseMessage",
+                    "You should authorize to get access to the system"
+            );
             ((HttpServletResponse) servletResponse)
                     .sendRedirect(((HttpServletRequest) servletRequest).getContextPath() + "/login");
         }

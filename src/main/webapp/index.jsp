@@ -6,19 +6,12 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<jsp:include page="base.jsp"/>
 <html>
   <head>
     <title>Taxi Ordering System</title>
   </head>
   <body>
-  <ul>
-      <li><a href=".">Home</a></li>
-      <li><a href="login">Sign In</a></li>
-      <li><a href="sign-up">Sign Up</a></li>
-      <li><a href="taxi-ordering">Taxi Ordering</a></li>
-      <li><a href="order-history">Order History</a></li>
-      <li><a href="logout">Log Out</a></li>
-  </ul>
   <h1>Welcome to the Taxi Ordering System!</h1>
   <h2>To get access to the system, please,
       <a href="login">click here</a>

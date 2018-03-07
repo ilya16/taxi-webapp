@@ -7,19 +7,12 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<jsp:include page="base.jsp"/>
 <html>
 <head>
     <title>Login</title>
 </head>
 <body>
-<ul>
-    <li><a href=".">Home</a></li>
-    <li><a href="login">Sign In</a></li>
-    <li><a href="sign-up">Sign Up</a></li>
-    <li><a href="taxi-ordering">Taxi Ordering</a></li>
-    <li><a href="order-history">Order History</a></li>
-    <li><a href="logout">Log Out</a></li>
-</ul>
 <form method="post">
     <p>${sessionScope.responseMessage}</p>
     <c:remove var="responseMessage" scope="session" />

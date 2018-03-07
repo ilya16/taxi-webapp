@@ -7,19 +7,12 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<jsp:include page="base.jsp"/>
 <html>
 <head>
     <title>Taxi Ordering</title>
 </head>
 <body>
-    <ul>
-        <li><a href=".">Home</a></li>
-        <li><a href="login">Sign In</a></li>
-        <li><a href="sign-up">Sign Up</a></li>
-        <li><a href="taxi-ordering">Taxi Ordering</a></li>
-        <li><a href="order-history">Order History</a></li>
-        <li><a href="logout">Log Out</a></li>
-    </ul>
     <h3>Order the taxi below:</h3>
     <h4>Fill the parameters and the system will show you the list of possible options</h4>
     <p>${sessionScope.responseMessage}</p>
