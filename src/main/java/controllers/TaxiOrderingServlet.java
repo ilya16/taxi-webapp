@@ -7,7 +7,9 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.api.TaxiOrderingService;
+import services.api.UserService;
 import services.impl.TaxiOrderingServiceImpl;
+import services.impl.UserServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,6 +31,7 @@ public class TaxiOrderingServlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(TaxiOrderingServlet.class);
 
     private static TaxiOrderingService taxiOrderingService = new TaxiOrderingServiceImpl();
+    private static UserService userService = new UserServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -39,6 +42,7 @@ public class TaxiOrderingServlet extends HttpServlet {
         Map<City, List<TaxiService>> cityTaxiServices = taxiOrderingService.getAllCityTaxiServices(cities, true);
 
         req.setAttribute("cityServices", cityTaxiServices);
+        req.setAttribute("user", userService.getUser((Integer)req.getSession().getAttribute("userId")));
 
         req.getRequestDispatcher("/taxi-ordering.jsp").forward(req, resp);
     }
@@ -58,8 +62,6 @@ public class TaxiOrderingServlet extends HttpServlet {
         String orderComments = req.getParameter("orderComments");
 
         //TODO: phone number check
-
-        resp.sendRedirect("/");
         Ride ride = taxiOrderingService.placeOrder(
                 Integer.toString((Integer)req.getSession().getAttribute("userId")),
                 cityId, saveCity, locationFrom, locationTo, phoneNumber, savePhoneNumber, serviceId,

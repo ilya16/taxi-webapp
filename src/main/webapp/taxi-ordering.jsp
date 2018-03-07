@@ -36,7 +36,7 @@
         </select>Save choice: <input type="checkbox" name="saveCity" checked/><br>
         From: <input type="text" name="locationFrom"/>
         To: <input type="text" name="locationTo"/><br>
-        Phone: <input type="text" name="phoneNumber"/>
+        Phone: <input type="text" name="phoneNumber" id="phoneNumber"/>
         Save number: <input type="checkbox" name="savePhoneNumber" checked/><br>
         <div id="select_boxes">Service: </div>
         Child Seat: <input type="checkbox" name="childSeat"/><br>
@@ -59,16 +59,23 @@
     </c:forEach>
 
     $(document).ready(function(){
+        $(function() {
+            $("#city").val('${requestScope.user.cityId}');
+            $("#phoneNumber").val('${requestScope.user.phoneNumber}');
+            $('#place-order').prop('disabled', $(this).val() === '0');
+        });
         $('#city').on('change', function(){
             var current = $(this).val();
-            $('#place-order').prop('disabled', $(this).val() === 0);
+            $('#place-order').prop('disabled', $(this).val() === '0');
             $('#select_boxes').html('<select name="service" id="service"></select>');
-            var options = '';
-            $.each(taxiServices[current].values, function(index, values){
-                console.log(values);
-                options += '<option value="'+values.value+'">'+values.text+'</option>';
-            });
-            $('#service').html(options);
+            if (current > 0) {
+                var options = '';
+                $.each(taxiServices[current].values, function (index, values) {
+                    console.log(values);
+                    options += '<option value="' + values.value + '">' + values.text + '</option>';
+                });
+                $('#service').html(options);
+            }
         });
     });
 </script>

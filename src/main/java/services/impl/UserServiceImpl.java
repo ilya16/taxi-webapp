@@ -46,4 +46,12 @@ public class UserServiceImpl implements UserService {
 
         return user;
     }
+
+    @Override
+    public User getUser(Integer userId) {
+        LOGGER.debug("Getting user");
+        User user = userController.getEntityById(userId);
+        user.setPassword(null);
+        return user;
+    }
 }
