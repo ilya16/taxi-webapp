@@ -17,7 +17,12 @@
     <h4>Fill the parameters and the system will show you the list of possible options</h4>
     <p>${sessionScope.responseMessage}</p>
     <c:if test="${sessionScope.orderSuccess}">
-        <p>You can check the order status in your account <a href="/order-history">history</a></p>
+        <p>
+            Car: ${requestScope.ride.car.model} ${requestScope.ride.car.color} ${requestScope.ride.car.serialNumber}<br>
+            Driver: ${requestScope.ride.car.driver.firstName} ${requestScope.ride.car.driver.lastName},
+                ${requestScope.ride.car.driver.age}
+        <p>Please, wait for the confirmation call from the driver</p>
+        <p>Check the status of order in account <a href="history">history</a></p>
     </c:if>
     <c:remove var="responseMessage" scope="session" />
     <c:remove var="orderSuccess" scope="session" />
@@ -28,9 +33,9 @@
                 <option value="${elem.key.id}">${elem.key.name}</option>
             </c:forEach>
         </select>Save choice: <input type="checkbox" name="saveCity" checked/><br>
-        From: <input type="text" name="locationFrom"/>
-        To: <input type="text" name="locationTo"/><br>
-        Phone: <input type="text" name="phoneNumber" id="phoneNumber"/>
+        From: <input type="text" name="locationFrom" required/>
+        To: <input type="text" name="locationTo" required/><br>
+        Phone: <input type="tel" name="phoneNumber" id="phoneNumber" value="${requestScope.user.phoneNumber}" required>
         Save number: <input type="checkbox" name="savePhoneNumber" checked/><br>
         <div id="select_boxes">Service: </div>
         Child Seat: <input type="checkbox" name="childSeat"/><br>
@@ -41,6 +46,7 @@
 </html>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
 <script type="text/javascript">
     var taxiServices = {};
 
@@ -52,24 +58,28 @@
         </c:forEach>
     </c:forEach>
 
+    function serviceOptions() {
+        var current = $('#city').val();
+        $('#place-order').prop('disabled', current === '0');
+        $('#select_boxes').html('<select name="service" id="service"></select>');
+        if (current > 0) {
+            var options = '';
+            $.each(taxiServices[current].values, function (index, values) {
+                console.log(values);
+                options += '<option value="' + values.value + '">' + values.text + '</option>';
+            });
+            $('#service').html(options);
+        }
+    }
+
     $(document).ready(function(){
         $(function() {
             $("#city").val('${requestScope.user.cityId}');
-            $("#phoneNumber").val('${requestScope.user.phoneNumber}');
-            $('#place-order').prop('disabled', $(this).val() === '0');
+            $("#phoneNumber").mask("+7 (999) 999-9999");
+            serviceOptions();
         });
         $('#city').on('change', function(){
-            var current = $(this).val();
-            $('#place-order').prop('disabled', $(this).val() === '0');
-            $('#select_boxes').html('<select name="service" id="service"></select>');
-            if (current > 0) {
-                var options = '';
-                $.each(taxiServices[current].values, function (index, values) {
-                    console.log(values);
-                    options += '<option value="' + values.value + '">' + values.text + '</option>';
-                });
-                $('#service').html(options);
-            }
+            serviceOptions();
         });
     });
 </script>

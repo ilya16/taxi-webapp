@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "order-history", urlPatterns = {"/order-history"})
+@WebServlet(name = "order-history", urlPatterns = {"/history"})
 public class OrderHistoryServlet extends HttpServlet {
     static {
         PropertyConfigurator.configure(OrderHistoryServlet.class.getClassLoader().getResource("log4j.properties"));
@@ -40,6 +40,6 @@ public class OrderHistoryServlet extends HttpServlet {
         req.setAttribute("rides", rides);
         req.setAttribute("user", userService.getUser(userId));
 
-        req.getRequestDispatcher("/order-history.jsp").forward(req, resp);
+        req.getRequestDispatcher("/history.jsp").forward(req, resp);
     }
 }

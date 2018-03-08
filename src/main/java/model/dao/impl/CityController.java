@@ -31,8 +31,7 @@ public class CityController implements CityDAO {
         List<City> cities = new ArrayList<>();
         String sql = "SELECT * FROM cities;";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
@@ -40,10 +39,6 @@ public class CityController implements CityDAO {
                 cities.add(new City(resultSet.getInt("id"), resultSet.getString("name"),
                         resultSet.getString("region"), resultSet.getBoolean("is_unsupported")));
             }
-
-            resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             LOGGER.error(e);
         }

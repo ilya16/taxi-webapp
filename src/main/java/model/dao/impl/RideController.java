@@ -21,10 +21,11 @@ public class RideController implements RideDAO {
 
     @Override
     public List<Ride> getAllUserRides(Integer userId) {
-        LOGGER.info("Getting all user rides");
+        // TODO improve logging
+        // TODO tests
+        LOGGER.debug("Getting all user rides");
 
         List<Ride> rides = new ArrayList<>();
-//         String sql = "SELECT * FROM rides r WHERE user_id = ? ORDER BY r.id ASC;";
         String sql = "SELECT *, c.is_blocked AS car_is_blocked, d.is_blocked AS driver_is_blocked FROM rides r\n" +
                 " JOIN cars c ON r.car_id = c.id\n" +
                 " JOIN drivers d ON c.driver_id = d.id\n" +
@@ -32,8 +33,7 @@ public class RideController implements RideDAO {
                 " JOIN cities ct ON s.city_id = ct.id\n" +
                 " WHERE user_id = ? ORDER BY r.id ASC;";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
@@ -73,7 +73,7 @@ public class RideController implements RideDAO {
                 );
 
                 Ride ride = new Ride(
-                        resultSet.getInt("id"),
+                        resultSet.getInt(1),
                         resultSet.getInt("user_id"),
                         car,
                         taxiService,
@@ -90,10 +90,6 @@ public class RideController implements RideDAO {
 
                 rides.add(ride);
             }
-
-            resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             LOGGER.error(e);
         }
@@ -126,8 +122,7 @@ public class RideController implements RideDAO {
         String sql = "INSERT INTO rides (user_id, car_id, service_id, location_from, location_to, " +
                 "price, order_comments) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setInt(1, ride.getUserId());
@@ -143,9 +138,6 @@ public class RideController implements RideDAO {
             if (resultSet.next()) {
                 lastId = resultSet.getInt(1);
             }
-            resultSet.close();
-            preparedStatement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -13,13 +13,11 @@
   </head>
   <body>
   <h1>Welcome to the Taxi Ordering System!</h1>
-  <h2>To get access to the system, please,
-      <a href="login">click here</a>
-      for authorization.
-  </h2>
-  <h2>If you have no account, please,
-      <a href="sign-up">click here</a>
-      for registration.
-  </h2><br>
+  <h3>
+      <a href="sign-up">Create Account</a> to get full access to the system.
+  </h3>
+  <h3>
+      <a href="login">Authorize</a> using existing account.
+  </h3>
   </body>
 </html>

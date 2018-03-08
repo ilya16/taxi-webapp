@@ -26,8 +26,7 @@ public class UserController implements UserDAO {
         User user = null;
         String sql = "SELECT * FROM users WHERE login = ?;";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, login);
             ResultSet resultSet = statement.executeQuery();
@@ -46,10 +45,6 @@ public class UserController implements UserDAO {
             }
 
             LOGGER.debug(String.format("Got user with login \"%s\"", login));
-
-            resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             LOGGER.error(e);
         }
@@ -62,8 +57,7 @@ public class UserController implements UserDAO {
         String sql = "INSERT INTO users (login, first_name, last_name, password, is_blocked) " +
                 "VALUES (?, ?, ?, ?, FALSE);";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, login);
             statement.setString(2, firstName);
@@ -72,9 +66,6 @@ public class UserController implements UserDAO {
             statement.executeQuery();
 
             LOGGER.info(String.format("Inserted user with login \"%s\"", login));
-
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             LOGGER.error(e);
         }
@@ -87,8 +78,7 @@ public class UserController implements UserDAO {
         User user = null;
         String sql = "SELECT * FROM users WHERE id = ?;";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -99,10 +89,6 @@ public class UserController implements UserDAO {
                     resultSet.getString("password"), resultSet.getString("phone_number"),
                     resultSet.getInt("city_id"), resultSet.getTimestamp("registration_date"),
                     resultSet.getBoolean("is_blocked"));
-
-            resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             LOGGER.error(e);
         }
@@ -131,8 +117,7 @@ public class UserController implements UserDAO {
         String sql = "UPDATE users SET first_name = ?, last_name = ?, " +
                 "phone_number = ?, city_id = ? WHERE id = ?;";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setString(1, user.getFirstName());
@@ -142,8 +127,6 @@ public class UserController implements UserDAO {
             preparedStatement.setInt(5, user.getId());
 
             count = preparedStatement.executeUpdate();
-            preparedStatement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

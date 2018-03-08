@@ -137,7 +137,7 @@ public class TaxiOrderingServiceImpl implements TaxiOrderingService {
         /* Basic implementation */
         List<Car> cars = carController.getAll()
                 .stream()
-                .filter(x -> !x.isBlocked() && x.isHasChildSeat() == childSeat)
+                .filter(x -> !x.isBlocked() && (!childSeat || x.isHasChildSeat()))
                 .collect(Collectors.toList());
 
         Random random = new Random();

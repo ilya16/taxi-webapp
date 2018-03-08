@@ -39,8 +39,14 @@ public class RegistrationServlet extends HttpServlet {
         String password = req.getParameter("password");
         String passwordConfirm = req.getParameter("passwordConfirm");
 
-        if (!password.equals(passwordConfirm)) {
-            req.setAttribute("responseMessage", "Passwords do not match");
+        req.setAttribute("login", login);
+        req.setAttribute("firstName", firstName);
+        req.setAttribute("lastName", lastName);
+
+        if (password.length() < 6) {
+            req.getSession().setAttribute("responseMessage", "Password should be at least 6 symbols long");
+            req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
+        } else if (!password.equals(passwordConfirm)) {
             req.getSession().setAttribute("responseMessage", "Passwords do not match");
             req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
         } else if (userService.register(login, firstName, lastName, password) != null) {

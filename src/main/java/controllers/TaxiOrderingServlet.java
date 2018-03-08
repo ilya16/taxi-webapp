@@ -17,12 +17,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet(name = "taxi-ordering", urlPatterns = {"/taxi-ordering"})
+@WebServlet(name = "taxi-ordering", urlPatterns = {"/order-taxi"})
 public class TaxiOrderingServlet extends HttpServlet {
     static {
         PropertyConfigurator.configure(TaxiOrderingServlet.class.getClassLoader().getResource("log4j.properties"));
@@ -44,7 +42,7 @@ public class TaxiOrderingServlet extends HttpServlet {
         req.setAttribute("cityServices", cityTaxiServices);
         req.setAttribute("user", userService.getUser((Integer)req.getSession().getAttribute("userId")));
 
-        req.getRequestDispatcher("/taxi-ordering.jsp").forward(req, resp);
+        req.getRequestDispatcher("/order-taxi.jsp").forward(req, resp);
     }
 
     @Override
@@ -61,7 +59,6 @@ public class TaxiOrderingServlet extends HttpServlet {
         String childSeat = req.getParameter("childSeat");
         String orderComments = req.getParameter("orderComments");
 
-        //TODO: phone number check
         Ride ride = taxiOrderingService.placeOrder(
                 Integer.toString((Integer)req.getSession().getAttribute("userId")),
                 cityId, saveCity, locationFrom, locationTo, phoneNumber, savePhoneNumber, serviceId,
@@ -70,11 +67,15 @@ public class TaxiOrderingServlet extends HttpServlet {
         if (ride != null) {
             req.getSession().setAttribute("orderSuccess", true);
             req.getSession().setAttribute("responseMessage", "Order was successfully placed!");
-            req.getRequestDispatcher("/taxi-ordering.jsp").forward(req, resp);
+            req.setAttribute("ride", ride);
+            req.getRequestDispatcher("/order-taxi.jsp").forward(req, resp);
         } else {
             req.getSession().setAttribute("orderSuccess", false);
-            req.getSession().setAttribute("responseMessage", "An error occurred while placing the order :(");
-            req.getRequestDispatcher("/taxi-ordering.jsp").forward(req, resp);
+            req.getSession().setAttribute(
+                    "responseMessage",
+                    "An error occurred while placing the order :(\nPlease, try again."
+            );
+            req.getRequestDispatcher("/order-taxi.jsp").forward(req, resp);
         }
     }
 }

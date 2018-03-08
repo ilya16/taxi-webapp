@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Filters the user requests depending on user authorization in the system.
  */
-@WebFilter(urlPatterns = {"/taxi-ordering", "/order-history"})
+@WebFilter(urlPatterns = {"/order-taxi", "/history"})
 public class AuthorizationFilter implements Filter {
 
     @Override
@@ -26,11 +26,12 @@ public class AuthorizationFilter implements Filter {
                     "responseMessage",
                     "You should authorize to get access to the system"
             );
-            ((HttpServletResponse) servletResponse)
-                    .sendRedirect(((HttpServletRequest) servletRequest).getContextPath() + "/login");
+            ((HttpServletResponse) servletResponse).sendRedirect(
+                    ((HttpServletRequest) servletRequest).getContextPath() + "/login"
+            );
         }
     }
-
+    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 

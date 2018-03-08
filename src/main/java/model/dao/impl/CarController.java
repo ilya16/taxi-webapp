@@ -1,12 +1,14 @@
 package model.dao.impl;
 
 import model.beans.Car;
+import model.beans.Driver;
 import model.dao.api.CarDAO;
 import model.utils.DataSourceFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,24 +31,36 @@ public class CarController implements CarDAO {
     @Override
     public List<Car> getAll() {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT * FROM cars;";
+        String sql = "SELECT *, c.is_blocked AS car_is_blocked, d.is_blocked AS driver_is_blocked " +
+                "FROM cars c JOIN drivers d ON c.driver_id = d.id;";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                cars.add(new Car(resultSet.getInt("id"), resultSet.getString("serial_number"),
-                        resultSet.getString("model"), resultSet.getString("color"),
-                        resultSet.getInt("driver_id"), resultSet.getBoolean("has_child_seat"),
-                        resultSet.getBoolean("is_blocked")));
-            }
+                Driver driver = new Driver(
+                        resultSet.getInt("driver_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getByte("age"),
+                        resultSet.getBoolean("driver_is_blocked")
+                );
 
-            resultSet.close();
-            statement.close();
-            connection.close();
+                Car car = new Car(
+                        resultSet.getInt(1),
+                        resultSet.getString("serial_number"),
+                        resultSet.getString("model"),
+                        resultSet.getString("color"),
+                        driver,
+                        resultSet.getBoolean("has_child_seat"),
+                        resultSet.getBoolean("car_is_blocked")
+                );
+
+                cars.add(car);
+            }
         } catch (SQLException e) {
+            // TODO throw exceptions
             LOGGER.error(e);
         }
 

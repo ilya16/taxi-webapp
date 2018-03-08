@@ -19,8 +19,8 @@
 <body>
 <ul>
     <li><a href=".">Home</a></li>
-    <li><a href="taxi-ordering">Taxi Ordering</a></li>
-    <li><a href="order-history">Order History</a></li>
+    <li><a href="order-taxi">Order Taxi</a></li>
+    <li><a href="history">History</a></li>
     <c:choose>
         <c:when test="${sessionScope.userLogin == null}">
             <li><a href="login">Sign In</a></li>

@@ -29,8 +29,7 @@ public class TaxiServiceController implements TaxiServiceDAO {
         TaxiService taxiService = null;
         String sql = "SELECT * FROM services WHERE id = ?;";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -39,10 +38,6 @@ public class TaxiServiceController implements TaxiServiceDAO {
             taxiService = new TaxiService(resultSet.getInt("id"), resultSet.getInt("city_id"),
                     resultSet.getString("service_type"), resultSet.getInt("base_rate"),
                     resultSet.getBoolean("is_removed"));
-
-            resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             LOGGER.error(e);
         }
@@ -56,8 +51,7 @@ public class TaxiServiceController implements TaxiServiceDAO {
         Map<Integer, City> cities = new HashMap<>();
         String sql = "SELECT * FROM services s JOIN cities c ON s.city_id = c.id;";
 
-        try {
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
@@ -78,10 +72,6 @@ public class TaxiServiceController implements TaxiServiceDAO {
 
                 taxiServices.add(taxiService);
             }
-
-            resultSet.close();
-            statement.close();
-            connection.close();
         } catch (SQLException e) {
             LOGGER.error(e);
         }

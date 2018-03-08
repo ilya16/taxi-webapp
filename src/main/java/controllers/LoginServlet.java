@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOGGER.debug("LoginServlet doGet");
-        req.getRequestDispatcher("/login.jsp").forward(req, resp);
+        req.getRequestDispatcher("login.jsp").forward(req, resp);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
         if (user != null) {
             req.getSession().setAttribute("userLogin", login);
             req.getSession().setAttribute("userId", user.getId());
-            resp.sendRedirect(req.getContextPath() + "/taxi-ordering");
+            resp.sendRedirect(req.getContextPath() + "/order-taxi");
         } else {
             req.getSession().setAttribute("responseMessage", "Incorrect login/password pair. Please, try again.");
             req.getRequestDispatcher("/login.jsp").forward(req, resp);

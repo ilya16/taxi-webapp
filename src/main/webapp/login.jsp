@@ -16,8 +16,8 @@
 <form method="post">
     <p>${sessionScope.responseMessage}</p>
     <c:remove var="responseMessage" scope="session" />
-    <input type="text" name="login" /><br>
-    <input type="password" name="password"/>
+    Login: <input type="text" name="login" /><br>
+    Password: <input type="password" name="password"/><br>
     <input type="submit" value="Sign In"/>
 </form>
 </body>
