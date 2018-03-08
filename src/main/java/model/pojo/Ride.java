@@ -1,4 +1,4 @@
-package model.beans;
+package model.pojo;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -47,37 +47,20 @@ public class Ride implements Serializable {
     public Ride(int id, int userId, Car car, TaxiService taxiService, Timestamp orderTime,
                 String locationFrom, String locationTo, Timestamp timeStart, Timestamp timeEnd,
                 int price, int rating, String orderComments, String status) {
-        this.id = id;
-        this.userId = userId;
+        this(id, userId, car.getId(), taxiService.getId(), orderTime, locationFrom, locationTo,
+                timeStart, timeEnd, price, rating, orderComments, status);
         this.car = car;
         this.taxiService = taxiService;
-        this.orderTime = orderTime;
-        this.locationFrom = locationFrom;
-        this.locationTo = locationTo;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.price = price;
-        this.rating = rating;
-        this.orderComments = orderComments;
-        this.status = status;
     }
 
     public Ride(int id, User user, Car car, TaxiService taxiService, Timestamp orderTime,
                 String locationFrom, String locationTo, Timestamp timeStart, Timestamp timeEnd,
                 int price, int rating, String orderComments, String status) {
-        this.id = id;
+        this(id, user.getId(), car.getId(), taxiService.getId(), orderTime, locationFrom, locationTo,
+                timeStart, timeEnd, price, rating, orderComments, status);
         this.user = user;
         this.car = car;
         this.taxiService = taxiService;
-        this.orderTime = orderTime;
-        this.locationFrom = locationFrom;
-        this.locationTo = locationTo;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.price = price;
-        this.rating = rating;
-        this.orderComments = orderComments;
-        this.status = status;
     }
 
     public int getId() {
@@ -213,9 +196,7 @@ public class Ride implements Serializable {
         return "Ride{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", user=" + user +
                 ", carId=" + carId +
-                ", car=" + car +
                 ", taxiServiceId=" + taxiServiceId +
                 ", taxiService=" + taxiService +
                 ", orderTime=" + orderTime +

@@ -3,6 +3,9 @@ package model.utils;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
+/**
+ * Manages the communication with Databases
+ */
 public class DataSourceFactory {
     private static DataSource datasource = new DataSource();
 
@@ -35,7 +38,7 @@ public class DataSourceFactory {
     }
 
     /**
-     * Get an object DataSource for connection to DB
+     * Returns a DataSource object for making connections to DB
      * @return dataSource
      */
     public static DataSource getDataSource() {

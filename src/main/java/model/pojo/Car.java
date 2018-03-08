@@ -1,4 +1,4 @@
-package model.beans;
+package model.pojo;
 
 import java.io.Serializable;
 
@@ -27,14 +27,8 @@ public class Car implements Serializable {
 
     public Car(int id, String serialNumber, String model, String color,
                Driver driver, boolean hasChildSeat, boolean isBlocked) {
-        this.id = id;
-        this.serialNumber = serialNumber;
-        this.model = model;
-        this.color = color;
-        this.driverId = driver.getId();
+        this(id, serialNumber, model, color, driver.getId(), hasChildSeat, isBlocked);
         this.driver = driver;
-        this.hasChildSeat = hasChildSeat;
-        this.isBlocked = isBlocked;
     }
 
     public int getId() {
@@ -109,7 +103,6 @@ public class Car implements Serializable {
                 ", model='" + model + '\'' +
                 ", color='" + color + '\'' +
                 ", driverId=" + driverId +
-                ", driver=" + driver +
                 ", hasChildSeat=" + hasChildSeat +
                 ", isBlocked=" + isBlocked +
                 '}';

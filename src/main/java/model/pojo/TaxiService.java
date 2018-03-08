@@ -1,4 +1,4 @@
-package model.beans;
+package model.pojo;
 
 import java.io.Serializable;
 
@@ -21,12 +21,8 @@ public class TaxiService implements Serializable {
     }
 
     public TaxiService(int id, City city, String serviceType, int baseRate, boolean isRemoved) {
-        this.id = id;
-        this.cityId = city.getId();
+        this(id, city.getId(), serviceType, baseRate, isRemoved);
         this.city = city;
-        this.serviceType = serviceType;
-        this.baseRate = baseRate;
-        this.isRemoved = isRemoved;
     }
 
     public int getId() {
@@ -82,7 +78,6 @@ public class TaxiService implements Serializable {
         return "TaxiService{" +
                 "id=" + id +
                 ", cityId=" + cityId +
-                ", city=" + city +
                 ", serviceType='" + serviceType + '\'' +
                 ", baseRate=" + baseRate +
                 ", isRemoved=" + isRemoved +

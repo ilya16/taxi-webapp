@@ -1,4 +1,4 @@
-package model.beans;
+package model.pojo;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

@@ -1,8 +1,9 @@
 package model.dao.impl;
 
-import model.beans.*;
-import model.beans.Driver;
+import model.pojo.*;
+import model.pojo.Driver;
 import model.dao.api.RideDAO;
+import model.utils.DAOException;
 import model.utils.DataSourceFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
@@ -20,10 +21,8 @@ public class RideController implements RideDAO {
     private static final Logger LOGGER = LogManager.getLogger(RideController.class);
 
     @Override
-    public List<Ride> getAllUserRides(Integer userId) {
-        // TODO improve logging
-        // TODO tests
-        LOGGER.debug("Getting all user rides");
+    public List<Ride> getAllUserRides(Integer userId) throws DAOException {
+        LOGGER.debug(String.format("Getting all user rides of user with id=%d", userId));
 
         List<Ride> rides = new ArrayList<>();
         String sql = "SELECT *, c.is_blocked AS car_is_blocked, d.is_blocked AS driver_is_blocked FROM rides r\n" +
@@ -39,76 +38,91 @@ public class RideController implements RideDAO {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                Driver driver = new Driver(
-                        resultSet.getInt("driver_id"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name"),
-                        resultSet.getByte("age"),
-                        resultSet.getBoolean("driver_is_blocked")
-                );
-
-                Car car = new Car(
-                        resultSet.getInt("car_id"),
-                        resultSet.getString("serial_number"),
-                        resultSet.getString("model"),
-                        resultSet.getString("color"),
-                        driver,
-                        resultSet.getBoolean("has_child_seat"),
-                        resultSet.getBoolean("car_is_blocked")
-                );
-
-                City city = new City(
-                        resultSet.getInt("city_id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("region"),
-                        resultSet.getBoolean("is_unsupported")
-                );
-
-                TaxiService taxiService = new TaxiService(
-                        resultSet.getInt("service_id"),
-                        city,
-                        resultSet.getString("service_type"),
-                        resultSet.getInt("base_rate"),
-                        resultSet.getBoolean("is_removed")
-                );
-
-                Ride ride = new Ride(
-                        resultSet.getInt(1),
-                        resultSet.getInt("user_id"),
-                        car,
-                        taxiService,
-                        resultSet.getTimestamp("order_time"),
-                        resultSet.getString("location_from"),
-                        resultSet.getString("location_to"),
-                        resultSet.getTimestamp("time_start"),
-                        resultSet.getTimestamp("time_end"),
-                        resultSet.getInt("price"),
-                        resultSet.getInt("rating"),
-                        resultSet.getString("order_comments"),
-                        resultSet.getString("status")
-                );
-
-                rides.add(ride);
+                rides.add(buildRideEntity(resultSet, true));
             }
         } catch (SQLException e) {
             LOGGER.error(e);
+            throw new DAOException("Cannot get all user rides from the database.");
         }
+
+        LOGGER.debug("Got all user rides");
 
         return rides;
     }
 
+    /**
+     * Finds Ride object by its identifier in database.
+     *
+     * @param id                Ride identifier
+     * @return                  Ride object
+     * @throws DAOException     if any exception occurs while communicating with the database.
+     */
     @Override
-    public Ride getEntityById(Integer id) {
-        return null;
+    public Ride getEntityById(Integer id) throws DAOException {
+        LOGGER.debug(String.format("Finding Driver with id=%d", id));
+
+        Ride ride;
+        String sql = "SELECT * FROM rides WHERE id = ?;";
+
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            resultSet.next();
+            ride = buildRideEntity(resultSet, false);
+
+        } catch (SQLException e) {
+            LOGGER.error(e);
+            throw new DAOException(String.format("Cannot get Ride with id=%d", id));
+        }
+
+        LOGGER.debug("Found Ride:" + ride);
+
+        return ride;
     }
 
+    /**
+     * Returns a list of all Ride entities from the database.
+     *
+     * @return                  list of all Ride entities
+     * @throws DAOException     if any exception occurs while communicating with the database.
+     */
     @Override
-    public List<Ride> getAll() {
-        return null;
+    public List<Ride> getAll() throws DAOException {
+        LOGGER.debug("Getting all rides");
+
+        List<Ride> rides = new ArrayList<>();
+        String sql = "SELECT * FROM rides;";
+
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                rides.add(buildRideEntity(resultSet, false));
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e);
+            throw new DAOException("Cannot get all rides from the database.");
+        }
+
+        LOGGER.debug("Got all rides");
+
+        return rides;
     }
 
+    /**
+     * Inserts new Ride into the database.
+     *
+     * @param ride              Ride entity to be inserted
+     * @return                  identifier of the inserted entity
+     * @throws DAOException     if any exception occurs while communicating with the database.
+     */
     @Override
-    public Integer insert(Ride ride) {
+    public Integer insert(Ride ride) throws DAOException {
+        LOGGER.debug("Inserting new ride");
+
         int lastId = 0;
 
         if (ride == null) {
@@ -123,40 +137,185 @@ public class RideController implements RideDAO {
                 "price, order_comments) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            preparedStatement.setInt(1, ride.getUserId());
-            preparedStatement.setInt(2, ride.getCarId());
-            preparedStatement.setInt(3, ride.getTaxiServiceId());
-            preparedStatement.setString(4, ride.getLocationFrom());
-            preparedStatement.setString(5, ride.getLocationTo());
-            preparedStatement.setInt(6, ride.getPrice());
-            preparedStatement.setString(7, ride.getOrderComments());
-            preparedStatement.executeUpdate();
+            statement.setInt(1, ride.getUserId());
+            statement.setInt(2, ride.getCarId());
+            statement.setInt(3, ride.getTaxiServiceId());
+            statement.setString(4, ride.getLocationFrom());
+            statement.setString(5, ride.getLocationTo());
+            statement.setInt(6, ride.getPrice());
+            statement.setString(7, ride.getOrderComments());
+            statement.executeUpdate();
 
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 lastId = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
+            throw new DAOException("Cannot insert new ride into the database.");
         }
+
+        LOGGER.info(String.format("Inserted new ride with id=%d", lastId));
 
         return lastId;
     }
 
+    /**
+     * Updates Ride entity fields in the database.
+     *
+     * @param ride              Ride entity to be updated
+     * @return                  number of updated rows in the database
+     * @throws DAOException     if any exception occurs while communicating with the database.
+     */
     @Override
-    public int update(Ride entity) {
+    public int update(Ride ride) throws DAOException {
+        LOGGER.debug("Updating ride fields.");
+
+        int count = 0;
+
+        if (ride == null) { return count; }
+
+        String sql = "UPDATE rides SET user_id = ?, car_id = ?, service_id = ?, " +
+                "order_time = ?, location_from = ?, location_to = ?, " +
+                "time_start = ?, time_end = ?, price = ?, rating = ?," +
+                "order_comments = ?, status = ? WHERE id = ?;";
+
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+            statement.setInt(1, ride.getUserId());
+            statement.setInt(2, ride.getCarId());
+            statement.setInt(3, ride.getTaxiServiceId());
+            statement.setTimestamp(4, ride.getOrderTime());
+            statement.setString(5, ride.getLocationFrom());
+            statement.setString(6, ride.getLocationTo());
+            statement.setTimestamp(7, ride.getTimeStart());
+            statement.setTimestamp(8, ride.getTimeEnd());
+            statement.setInt(9, ride.getPrice());
+            statement.setString(10, ride.getOrderComments());
+            statement.setString(11, ride.getStatus());
+            statement.setInt(12, ride.getId());
+
+            count = statement.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.error(e);
+            throw new DAOException("Cannot update ride fields in the database.");
+        }
+
+        LOGGER.info(String.format("Updated fields of %d rides", count));
+
+        return count;
+    }
+
+    /**
+     * Saves the state of the Ride entity in the database.
+     * Updates/Inserts entity in/into the database.
+     *
+     * @param ride              Ride entity to be saved
+     * @return                  saved entity
+     * @throws DAOException     if any exception occurs while communicating with the database.
+     */
+    @Override
+    public Ride save(Ride ride) throws DAOException {
+        if (ride == null) {
+            return null;
+        }
+
+        LOGGER.debug("Saving the ride information in the database.");
+
+        if (ride.getId() > 0){
+            update(ride);
+        } else {
+            int newId = insert(ride);
+            ride.setId(newId);
+        }
+
+        LOGGER.debug(String.format("Information of a ride with id=%d was saved in the database.", ride.getId()));
+
+        return ride;
+    }
+
+    @Override
+    public int delete(Ride ride) {
         return 0;
     }
 
-    @Override
-    public boolean delete(Integer id) {
-        return false;
-    }
+    /**
+     * Builds a Ride object from row in resultSet.
+     *
+     * @param resultSet         ResultsSet object
+     * @param detailed          were joins made or not
+     * @return                  Ride object
+     * @throws SQLException     if a column name is invalid
+     */
+    private Ride buildRideEntity(ResultSet resultSet, boolean detailed) throws SQLException {
+        if (detailed) {
+            Driver driver = new Driver(
+                    resultSet.getInt("driver_id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    resultSet.getByte("age"),
+                    resultSet.getBoolean("driver_is_blocked")
+            );
 
-    @Override
-    public Ride save(Ride entity) {
-        return null;
+            Car car = new Car(
+                    resultSet.getInt("car_id"),
+                    resultSet.getString("serial_number"),
+                    resultSet.getString("model"),
+                    resultSet.getString("color"),
+                    driver,
+                    resultSet.getBoolean("has_child_seat"),
+                    resultSet.getBoolean("car_is_blocked")
+            );
+
+            City city = new City(
+                    resultSet.getInt("city_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("region"),
+                    resultSet.getBoolean("is_unsupported")
+            );
+
+            TaxiService taxiService = new TaxiService(
+                    resultSet.getInt("service_id"),
+                    city,
+                    resultSet.getString("service_type"),
+                    resultSet.getInt("base_rate"),
+                    resultSet.getBoolean("is_removed")
+            );
+
+            return new Ride(
+                    resultSet.getInt(1),
+                    resultSet.getInt("user_id"),
+                    car,
+                    taxiService,
+                    resultSet.getTimestamp("order_time"),
+                    resultSet.getString("location_from"),
+                    resultSet.getString("location_to"),
+                    resultSet.getTimestamp("time_start"),
+                    resultSet.getTimestamp("time_end"),
+                    resultSet.getInt("price"),
+                    resultSet.getInt("rating"),
+                    resultSet.getString("order_comments"),
+                    resultSet.getString("status")
+            );
+        } else {
+            return new Ride(
+                    resultSet.getInt(1),
+                    resultSet.getInt("user_id"),
+                    resultSet.getInt("car_id"),
+                    resultSet.getInt("service_id"),
+                    resultSet.getTimestamp("order_time"),
+                    resultSet.getString("location_from"),
+                    resultSet.getString("location_to"),
+                    resultSet.getTimestamp("time_start"),
+                    resultSet.getTimestamp("time_end"),
+                    resultSet.getInt("price"),
+                    resultSet.getInt("rating"),
+                    resultSet.getString("order_comments"),
+                    resultSet.getString("status")
+            );
+        }
     }
 }
