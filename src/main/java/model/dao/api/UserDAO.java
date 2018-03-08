@@ -1,7 +1,7 @@
 package model.dao.api;
 
 import model.pojo.User;
-import model.utils.DAOException;
+import model.DAOException;
 
 /**
  * Provides the interface for User DAO that communicates

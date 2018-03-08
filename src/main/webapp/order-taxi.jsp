@@ -5,7 +5,7 @@
   Time: 17:11
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:include page="base.jsp"/>
 <html>
@@ -13,8 +13,8 @@
     <title>Taxi Ordering</title>
 </head>
 <body>
-    <h3>Order the taxi below:</h3>
-    <h4>Fill the parameters and the system will show you the list of possible options</h4>
+    <h2>Order the taxi below:</h2>
+    <h4>Fill the parameters and the system will provide you with the most suitable taxi driver</h4>
     <p>${sessionScope.responseMessage}</p>
     <c:if test="${sessionScope.orderSuccess}">
         <p>
@@ -28,7 +28,7 @@
     <c:remove var="orderSuccess" scope="session" />
     <form method="post">
         <select name="city" id="city">
-            <option value="0">Choose city: </option>
+            <option value="0" disabled>Choose city: </option>
             <c:forEach items="${requestScope.cityServices}" var="elem">
                 <option value="${elem.key.id}">${elem.key.name}</option>
             </c:forEach>

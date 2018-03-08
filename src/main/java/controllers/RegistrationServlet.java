@@ -1,11 +1,12 @@
 package controllers;
 
+import model.pojo.User;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.ServiceException;
 import services.impl.UserServiceImpl;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,13 +26,14 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOGGER.debug("RegistrationServlet doGet");
+        LOGGER.info("RegistrationServlet doGet is executing");
+
         req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOGGER.debug("RegistrationServlet doPost");
+        LOGGER.info("RegistrationServlet doPost is executing");
 
         String login = req.getParameter("login");
         String firstName = req.getParameter("firstName");
@@ -44,17 +46,32 @@ public class RegistrationServlet extends HttpServlet {
         req.setAttribute("lastName", lastName);
 
         if (password.length() < 6) {
-            req.getSession().setAttribute("responseMessage", "Password should be at least 6 symbols long");
+            req.getSession().setAttribute("responseMessage",
+                    "Password should be at least 6 symbols long");
             req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
-        } else if (!password.equals(passwordConfirm)) {
-            req.getSession().setAttribute("responseMessage", "Passwords do not match");
+        }
+        else if (!password.equals(passwordConfirm)) {
+            req.getSession().setAttribute("responseMessage",
+                    "Passwords do not match");
             req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
-        } else if (userService.register(login, firstName, lastName, password) != null) {
-            req.getSession().setAttribute("responseMessage", "Registration was successful! Sign into the System below:");
-            resp.sendRedirect("/login");
-        } else {
-            req.getSession().setAttribute("responseMessage", String.format("Login \"%s\" is already taken, enter another one", login));
-            req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
+        }
+        else {
+            try {
+                User user = userService.register(login, firstName, lastName, password);
+
+                LOGGER.info(String.format("User with login=%s has successfully registered in the system",
+                        user.getLogin()));
+
+                req.getSession().setAttribute("responseMessage",
+                        "Registration was successful! Sign into the System below:");
+                resp.sendRedirect("/login");
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+
+                req.getSession().setAttribute("responseMessage",
+                        String.format("Login \"%s\" is already taken, enter another one", login));
+                req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
+            }
         }
     }
 }

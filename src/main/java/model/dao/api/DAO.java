@@ -1,6 +1,6 @@
 package model.dao.api;
 
-import model.utils.DAOException;
+import model.DAOException;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package model.dao.impl;
 
 import model.pojo.City;
 import model.dao.api.CityDAO;
-import model.utils.DAOException;
+import model.DAOException;
 import model.utils.DataSourceFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
@@ -56,7 +56,7 @@ public class CityController implements CityDAO {
             );
 
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get City with id=%d", id));
         }
 
@@ -91,7 +91,7 @@ public class CityController implements CityDAO {
                 ));
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot get all cities from the database.");
         }
 
@@ -131,7 +131,7 @@ public class CityController implements CityDAO {
                 lastId = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot insert new city into the database.");
         }
 
@@ -168,7 +168,7 @@ public class CityController implements CityDAO {
 
             count = statement.executeUpdate();
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot update city fields in the database.");
         }
 

@@ -3,7 +3,7 @@ package model.dao.impl;
 import model.pojo.Car;
 import model.pojo.Driver;
 import model.dao.api.CarDAO;
-import model.utils.DAOException;
+import model.DAOException;
 import model.utils.DataSourceFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
@@ -61,7 +61,7 @@ public class CarController implements CarDAO {
             );
 
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get Car with id=%d", id));
         }
 
@@ -110,7 +110,7 @@ public class CarController implements CarDAO {
                 cars.add(car);
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot get all cars from the database.");
         }
 
@@ -154,7 +154,7 @@ public class CarController implements CarDAO {
                 lastId = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot insert new car into the database.");
         }
 
@@ -194,7 +194,7 @@ public class CarController implements CarDAO {
 
             count = statement.executeUpdate();
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot update car fields in the database.");
         }
 

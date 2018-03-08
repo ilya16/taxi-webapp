@@ -1,11 +1,11 @@
 package controllers;
 
-import model.beans.City;
-import model.beans.Ride;
-import model.beans.TaxiService;
+import model.pojo.Ride;
+import model.pojo.User;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.ServiceException;
 import services.api.TaxiOrderingService;
 import services.api.UserService;
 import services.impl.TaxiOrderingServiceImpl;
@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "order-history", urlPatterns = {"/history"})
@@ -32,14 +33,60 @@ public class OrderHistoryServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOGGER.debug("OrderHistoryServlet doGet");
+        LOGGER.info("OrderHistoryServlet doGet is executing");
 
         Integer userId = (Integer)req.getSession().getAttribute("userId");
-        List<Ride> rides = taxiOrderingService.getAllUserRides(userId);
 
-        req.setAttribute("rides", rides);
-        req.setAttribute("user", userService.getUser(userId));
+        List<Ride> userRides;
+        try {
+            userRides = taxiOrderingService.getAllUserRides(userId);
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            userRides = new ArrayList<>();
+        }
+        req.setAttribute("rides", userRides);
+
+        try {
+            User user = userService.getUser((Integer)req.getSession().getAttribute("userId"));
+            req.setAttribute("user", user);
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+        }
 
         req.getRequestDispatcher("/history.jsp").forward(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        LOGGER.info("TaxiOrderingServlet doPost is executing");
+
+        String idToCancel = req.getParameter("idToCancel");
+
+        if (idToCancel != null) {
+            Integer rideId;
+            try {
+                rideId = Integer.parseInt(idToCancel);
+                taxiOrderingService.cancelOrder(rideId);
+
+                req.getSession().setAttribute("responseMessage", "Status was successfully updated!");
+            } catch (NumberFormatException | ServiceException e) {
+                LOGGER.error(e);
+                req.getSession().setAttribute("responseMessage",
+                        "An error occurred while updating the status. Please, try again!");
+            }
+
+            List<Ride> userRides;
+            try {
+                userRides = taxiOrderingService.getAllUserRides(
+                        (Integer)req.getSession().getAttribute("userId")
+                );
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                userRides = new ArrayList<>();
+            }
+            req.setAttribute("rides", userRides);
+
+            req.getRequestDispatcher("/history.jsp").forward(req, resp);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package model.utils;
+package model;
 
 /**
  * DAO level exception.

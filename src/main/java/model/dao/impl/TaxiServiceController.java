@@ -3,7 +3,7 @@ package model.dao.impl;
 import model.pojo.City;
 import model.pojo.TaxiService;
 import model.dao.api.TaxiServiceDAO;
-import model.utils.DAOException;
+import model.DAOException;
 import model.utils.DataSourceFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +34,7 @@ public class TaxiServiceController implements TaxiServiceDAO {
         LOGGER.debug(String.format("Finding TaxiService with id=%d", id));
 
         TaxiService taxiService;
-        String sql = "SELECT * FROM services WHERE id = ?;";
+        String sql = "SELECT * FROM services s JOIN cities c ON s.city_id = c.id WHERE s.id = ?;";
 
         try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -57,7 +57,7 @@ public class TaxiServiceController implements TaxiServiceDAO {
                     resultSet.getBoolean("is_removed")
             );
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get TaxiService with id=%d", id));
         }
 
@@ -108,7 +108,7 @@ public class TaxiServiceController implements TaxiServiceDAO {
                 taxiServices.add(taxiService);
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot get all taxi services from the database.");
         }
 
@@ -149,7 +149,7 @@ public class TaxiServiceController implements TaxiServiceDAO {
                 lastId = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot insert new taxiService into the database.");
         }
 
@@ -187,7 +187,7 @@ public class TaxiServiceController implements TaxiServiceDAO {
 
             count = statement.executeUpdate();
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot update driver taxi service in the database.");
         }
 

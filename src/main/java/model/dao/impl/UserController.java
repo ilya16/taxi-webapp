@@ -2,7 +2,7 @@ package model.dao.impl;
 
 import model.dao.api.UserDAO;
 import model.pojo.User;
-import model.utils.DAOException;
+import model.DAOException;
 import model.utils.DataSourceFactory;
 import model.utils.Encryptor;
 import org.apache.log4j.PropertyConfigurator;
@@ -23,9 +23,9 @@ public class UserController implements UserDAO {
     /**
      * Finds a User object in the database by its login and password fields.
      *
-     * @param login         user login
-     * @param password      user password
-     * @return              found user entity
+     * @param login             user login
+     * @param password          user password
+     * @return                  found user entity
      * @throws DAOException     if any exception occurs while communicating with the database.
      */
     @Override
@@ -99,7 +99,7 @@ public class UserController implements UserDAO {
                     resultSet.getBoolean("is_blocked")
             );
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get User with id=%d", id));
         }
 
@@ -138,7 +138,7 @@ public class UserController implements UserDAO {
                     resultSet.getBoolean("is_blocked"))
             );
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot get all users from the database.");
         }
 
@@ -169,18 +169,19 @@ public class UserController implements UserDAO {
 
         try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
             statement.setString(1, user.getLogin());
             statement.setString(2, user.getFirstName());
             statement.setString(3, user.getLastName());
             statement.setString(4, Encryptor.hashPassword(user.getPassword()));
-            statement.executeQuery();
+            statement.executeUpdate();
 
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 lastId = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot insert new user into the database.");
         }
 
@@ -219,7 +220,7 @@ public class UserController implements UserDAO {
 
             count = statement.executeUpdate();
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot update user fields in the database.");
         }
 
@@ -247,7 +248,7 @@ public class UserController implements UserDAO {
             user.setBlocked(true);
             count = update(user);
         } catch (DAOException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot block the user.");
         }
 

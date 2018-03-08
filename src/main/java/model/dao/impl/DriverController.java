@@ -1,12 +1,9 @@
 package model.dao.impl;
 
-import model.dao.api.DAO;
 import model.dao.api.DriverDAO;
-import model.pojo.City;
 import model.pojo.Driver;
-import model.utils.DAOException;
+import model.DAOException;
 import model.utils.DataSourceFactory;
-import model.utils.Encryptor;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +48,7 @@ public class DriverController implements DriverDAO {
             );
 
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get Driver with id=%d", id));
         }
 
@@ -87,7 +84,7 @@ public class DriverController implements DriverDAO {
                 ));
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot get all drivers from the database.");
         }
 
@@ -128,7 +125,7 @@ public class DriverController implements DriverDAO {
                 lastId = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot insert new driver into the database.");
         }
 
@@ -166,7 +163,7 @@ public class DriverController implements DriverDAO {
 
             count = statement.executeUpdate();
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot update driver fields in the database.");
         }
 

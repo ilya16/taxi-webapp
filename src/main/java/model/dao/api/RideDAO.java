@@ -1,7 +1,7 @@
 package model.dao.api;
 
 import model.pojo.Ride;
-import model.utils.DAOException;
+import model.DAOException;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package model.dao.impl;
 import model.pojo.*;
 import model.pojo.Driver;
 import model.dao.api.RideDAO;
-import model.utils.DAOException;
+import model.DAOException;
 import model.utils.DataSourceFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +41,7 @@ public class RideController implements RideDAO {
                 rides.add(buildRideEntity(resultSet, true));
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot get all user rides from the database.");
         }
 
@@ -73,7 +73,7 @@ public class RideController implements RideDAO {
             ride = buildRideEntity(resultSet, false);
 
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get Ride with id=%d", id));
         }
 
@@ -103,7 +103,7 @@ public class RideController implements RideDAO {
                 rides.add(buildRideEntity(resultSet, false));
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot get all rides from the database.");
         }
 
@@ -134,7 +134,7 @@ public class RideController implements RideDAO {
         }
 
         String sql = "INSERT INTO rides (user_id, car_id, service_id, location_from, location_to, " +
-                "price, order_comments) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                "price, order_comments, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?::ride_status)";
 
         try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -146,6 +146,7 @@ public class RideController implements RideDAO {
             statement.setString(5, ride.getLocationTo());
             statement.setInt(6, ride.getPrice());
             statement.setString(7, ride.getOrderComments());
+            statement.setString(8, ride.getStatus());
             statement.executeUpdate();
 
             ResultSet resultSet = statement.getGeneratedKeys();
@@ -153,7 +154,7 @@ public class RideController implements RideDAO {
                 lastId = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot insert new ride into the database.");
         }
 
@@ -180,7 +181,7 @@ public class RideController implements RideDAO {
         String sql = "UPDATE rides SET user_id = ?, car_id = ?, service_id = ?, " +
                 "order_time = ?, location_from = ?, location_to = ?, " +
                 "time_start = ?, time_end = ?, price = ?, rating = ?," +
-                "order_comments = ?, status = ? WHERE id = ?;";
+                "order_comments = ?, status = ?::ride_status WHERE id = ?;";
 
         try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -194,13 +195,14 @@ public class RideController implements RideDAO {
             statement.setTimestamp(7, ride.getTimeStart());
             statement.setTimestamp(8, ride.getTimeEnd());
             statement.setInt(9, ride.getPrice());
-            statement.setString(10, ride.getOrderComments());
-            statement.setString(11, ride.getStatus());
-            statement.setInt(12, ride.getId());
+            statement.setInt(10, ride.getRating());
+            statement.setString(11, ride.getOrderComments());
+            statement.setString(12, ride.getStatus());
+            statement.setInt(13, ride.getId());
 
             count = statement.executeUpdate();
         } catch (SQLException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot update ride fields in the database.");
         }
 

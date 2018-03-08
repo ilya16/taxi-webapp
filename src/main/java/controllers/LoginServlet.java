@@ -1,9 +1,10 @@
 package controllers;
 
-import model.beans.User;
+import model.pojo.User;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.ServiceException;
 import services.impl.UserServiceImpl;
 
 import javax.servlet.ServletException;
@@ -25,26 +26,29 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOGGER.debug("LoginServlet doGet");
+        LOGGER.info("LoginServlet doGet is executing");
         req.getRequestDispatcher("login.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOGGER.debug("LoginServlet doPost");
+        LOGGER.info("LoginServlet doPost is executing");
 
         String login = req.getParameter("login");
         String password = req.getParameter("password");
 
-        LOGGER.debug("Login servlet");
+        try {
+            User user = userService.auth(login, password);
 
-        User user = userService.auth(login, password);
-        if (user != null) {
+            LOGGER.info(String.format("User with login=%s has successfully authorized in the system", login));
+
             req.getSession().setAttribute("userLogin", login);
             req.getSession().setAttribute("userId", user.getId());
             resp.sendRedirect(req.getContextPath() + "/order-taxi");
-        } else {
-            req.getSession().setAttribute("responseMessage", "Incorrect login/password pair. Please, try again.");
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            req.getSession().setAttribute("responseMessage",
+                    "Incorrect login/password pair. Please, try again.");
             req.getRequestDispatcher("/login.jsp").forward(req, resp);
         }
     }
