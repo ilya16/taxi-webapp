@@ -32,7 +32,7 @@ public class UserController implements UserDAO {
     public User findUserByLoginAndPassword(String login, String password) throws DAOException {
         LOGGER.debug(String.format("Finding user by login \"%s\" and password", login));
 
-        User user = null;
+        User user;
         String sql = "SELECT * FROM users WHERE login = ?;";
 
         try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
@@ -56,6 +56,7 @@ public class UserController implements UserDAO {
                 );
             } else {
                 LOGGER.debug("Password is not correct");
+                throw new DAOException(String.format("Password of User with login=%s is not correct", login));
             }
         } catch (SQLException e) {
             LOGGER.error(e);

@@ -5,6 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.ServiceException;
+import services.api.UserService;
 import services.impl.UserServiceImpl;
 
 import javax.servlet.ServletException;
@@ -22,7 +23,7 @@ public class LoginServlet extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(LoginServlet.class);
 
-    private static UserServiceImpl userService = new UserServiceImpl() ;
+    private static UserService userService = new UserServiceImpl() ;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

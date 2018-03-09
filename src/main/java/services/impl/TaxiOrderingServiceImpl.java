@@ -20,11 +20,23 @@ public class TaxiOrderingServiceImpl implements TaxiOrderingService {
 
     private static final Logger LOGGER = LogManager.getLogger(TaxiOrderingServiceImpl.class);
 
-    private static TaxiServiceDAO taxiServiceController = new TaxiServiceController();
-    private static CityDAO cityController = new CityController();
-    private static RideDAO rideController = new RideController();
-    private static CarDAO carController = new CarController();
-    private static UserDAO userController = new UserController();
+    private TaxiServiceDAO taxiServiceController = new TaxiServiceController();
+    private CityDAO cityController = new CityController();
+    private RideDAO rideController = new RideController();
+    private CarDAO carController = new CarController();
+    private UserDAO userController = new UserController();
+
+    public TaxiOrderingServiceImpl() {
+    }
+
+    public TaxiOrderingServiceImpl(TaxiServiceDAO taxiServiceController, CityDAO cityController,
+                                   RideDAO rideController, CarDAO carController, UserDAO userController) {
+        this.taxiServiceController = taxiServiceController;
+        this.cityController = cityController;
+        this.rideController = rideController;
+        this.carController = carController;
+        this.userController = userController;
+    }
 
     /**
      * Manages the taxi order placing.
@@ -100,12 +112,13 @@ public class TaxiOrderingServiceImpl implements TaxiOrderingService {
         int rideId;
         try {
             rideId = rideController.insert(ride);
-            ride.setId(rideId);
-            return ride;
         } catch (DAOException e) {
             LOGGER.error(e);
             throw new ServiceException("Cannot save order information in the system");
         }
+
+        ride.setId(rideId);
+        return ride;
     }
 
     /**
@@ -125,13 +138,18 @@ public class TaxiOrderingServiceImpl implements TaxiOrderingService {
             throw new ServiceException(String.format("Order with id=%d was not found in the system", rideId));
         }
 
-        ride.setStatus("cancelled");
+        if ("ordered".equals(ride.getStatus())) {
+            ride.setStatus("cancelled");
 
-        try {
-            rideController.update(ride);
-        } catch (DAOException e) {
-            LOGGER.error(e);
-            throw new ServiceException(String.format("Cannot cancel the order with id=%d", rideId));
+            try {
+                rideController.update(ride);
+            } catch (DAOException e) {
+                LOGGER.error(e);
+                throw new ServiceException(String.format("Cannot cancel the order with id=%d", rideId));
+            }
+        } else {
+            throw new ServiceException(String.format("Cannot cancel the order with id=%d since the ride has " +
+                    "already started or finished", rideId));
         }
     }
 
@@ -266,6 +284,11 @@ public class TaxiOrderingServiceImpl implements TaxiOrderingService {
         cars = cars.stream()
                 .filter(x -> !x.isBlocked() && (!childSeat || x.isHasChildSeat()))
                 .collect(Collectors.toList());
+
+        if (cars.size() == 0) {
+            LOGGER.info("No cars available for the given order parameters");
+            throw new ServiceException("No cars available for the given order parameters");
+        }
 
         Random random = new Random();
         return cars.get(random.nextInt(cars.size()));

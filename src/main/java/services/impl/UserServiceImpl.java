@@ -1,6 +1,7 @@
 package services.impl;
 
 import model.DAOException;
+import model.dao.api.UserDAO;
 import model.dao.impl.UserController;
 import model.pojo.User;
 import org.apache.log4j.PropertyConfigurator;
@@ -23,7 +24,14 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
-    private static UserController userController = new UserController();
+    private UserDAO userController = new UserController();
+
+    public UserServiceImpl() {
+    }
+
+    public UserServiceImpl(UserDAO userController) {
+        this.userController = userController;
+    }
 
     /**
      * Manages authorization of the user in the system.
@@ -89,8 +97,8 @@ public class UserServiceImpl implements UserService {
             throw new ServiceException(String.format("User with login \"%s\" already exists", login));
         } else {
             try {
-                Integer userId = userController
-                        .insert(new User(
+                Integer userId = userController.insert(
+                        new User(
                                 0, login, firstName, lastName, password,
                                 null, 0, null, false)
                         );

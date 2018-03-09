@@ -125,7 +125,8 @@ public class TaxiOrderingServlet extends HttpServlet {
                 req.getSession().setAttribute("orderSuccess", false);
                 req.getSession().setAttribute(
                         "responseMessage",
-                        "An error occurred while placing the order :(\nPlease, try again."
+                        "An error occurred while placing the order :(\n" +
+                                "We are sorry, probably, no drivers are busy right now. Please, try again later."
                 );
             }
             req.getRequestDispatcher("/order-taxi.jsp").forward(req, resp);
