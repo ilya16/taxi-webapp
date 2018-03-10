@@ -116,7 +116,7 @@ public class TaxiOrderingServiceTest {
         assertNotEquals("Car is not null", ride.getCar());
 
         /* price is valid */
-        assertTrue(ride.getPrice() > taxiService.getBaseRate());
+        assertTrue(ride.getPrice() >= taxiService.getBaseRate());
 
         /* driver was selected properly for given conditions */
         assertTrue(ride.getCar().getDriverId() > 0);

@@ -33,20 +33,21 @@ public class DriverController implements DriverDAO {
         Driver driver;
         String sql = "SELECT * FROM drivers WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
 
-            resultSet.next();
-            driver = new Driver(
-                    resultSet.getInt("driver_id"),
-                    resultSet.getString("first_name"),
-                    resultSet.getString("last_name"),
-                    resultSet.getByte("age"),
-                    resultSet.getBoolean("is_blocked")
-            );
-
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                driver = new Driver(
+                        resultSet.getInt("driver_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getByte("age"),
+                        resultSet.getBoolean("is_blocked")
+                );
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get Driver with id=%d", id));
@@ -70,18 +71,19 @@ public class DriverController implements DriverDAO {
         List<Driver> drivers = new ArrayList<>();
         String sql = "SELECT * FROM drivers;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            while (resultSet.next()) {
-                drivers.add(new Driver(
-                        resultSet.getInt("driver_id"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name"),
-                        resultSet.getByte("age"),
-                        resultSet.getBoolean("is_blocked")
-                ));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    drivers.add(new Driver(
+                            resultSet.getInt("driver_id"),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name"),
+                            resultSet.getByte("age"),
+                            resultSet.getBoolean("is_blocked")
+                    ));
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -113,16 +115,18 @@ public class DriverController implements DriverDAO {
         String sql = "INSERT INTO drivers (first_name, last_name, age, is_blocked) " +
                 "VALUES (?, ?, ?, FALSE);";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             statement.setString(1, driver.getFirstName());
             statement.setString(2, driver.getLastName());
             statement.setInt(3, driver.getAge());
             statement.executeQuery();
 
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -152,8 +156,8 @@ public class DriverController implements DriverDAO {
         String sql = "UPDATE drivers SET first_name = ?, last_name = ?, " +
                 "age = ?, is_blocked = ? WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, driver.getFirstName());
             statement.setString(2, driver.getLastName());

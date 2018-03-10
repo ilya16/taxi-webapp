@@ -42,19 +42,20 @@ public class CityController implements CityDAO {
         City city;
         String sql = "SELECT * FROM cities WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
 
-            resultSet.next();
-            city = new City(
-                    resultSet.getInt("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("region"),
-                    resultSet.getBoolean("is_unsupported")
-            );
-
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                city = new City(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("region"),
+                        resultSet.getBoolean("is_unsupported")
+                );
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get City with id=%d", id));
@@ -78,17 +79,18 @@ public class CityController implements CityDAO {
         List<City> cities = new ArrayList<>();
         String sql = "SELECT * FROM cities;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            while (resultSet.next()) {
-                cities.add(new City(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("region"),
-                        resultSet.getBoolean("is_unsupported")
-                ));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    cities.add(new City(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("region"),
+                            resultSet.getBoolean("is_unsupported")
+                    ));
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -120,15 +122,17 @@ public class CityController implements CityDAO {
         String sql = "INSERT INTO cities (name, region, is_unsupported) " +
                 "VALUES (?, ?, FALSE);";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             statement.setString(1, city.getName());
             statement.setString(2, city.getRegion());
             statement.executeQuery();
 
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -158,8 +162,8 @@ public class CityController implements CityDAO {
         String sql = "UPDATE cities SET name = ?, region = ?, " +
                 "is_unsupported = ? WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, city.getName());
             statement.setString(2, city.getRegion());

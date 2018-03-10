@@ -32,13 +32,15 @@ public class RideController implements RideDAO {
                 " JOIN cities ct ON s.city_id = ct.id\n" +
                 " WHERE user_id = ? ORDER BY r.id ASC;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, userId);
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            while (resultSet.next()) {
-                rides.add(buildRideEntity(resultSet, true));
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    rides.add(buildRideEntity(resultSet, true));
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -64,14 +66,15 @@ public class RideController implements RideDAO {
         Ride ride;
         String sql = "SELECT * FROM rides WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
 
-            resultSet.next();
-            ride = buildRideEntity(resultSet, false);
-
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                ride = buildRideEntity(resultSet, false);
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get Ride with id=%d", id));
@@ -95,12 +98,13 @@ public class RideController implements RideDAO {
         List<Ride> rides = new ArrayList<>();
         String sql = "SELECT * FROM rides;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            while (resultSet.next()) {
-                rides.add(buildRideEntity(resultSet, false));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    rides.add(buildRideEntity(resultSet, false));
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -136,8 +140,8 @@ public class RideController implements RideDAO {
         String sql = "INSERT INTO rides (user_id, car_id, service_id, location_from, location_to, " +
                 "price, order_comments, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?::ride_status)";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setInt(1, ride.getUserId());
             statement.setInt(2, ride.getCarId());
@@ -149,9 +153,10 @@ public class RideController implements RideDAO {
             statement.setString(8, ride.getStatus());
             statement.executeUpdate();
 
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -183,8 +188,8 @@ public class RideController implements RideDAO {
                 "time_start = ?, time_end = ?, price = ?, rating = ?," +
                 "order_comments = ?, status = ?::ride_status WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, ride.getUserId());
             statement.setInt(2, ride.getCarId());

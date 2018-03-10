@@ -36,26 +36,28 @@ public class TaxiServiceController implements TaxiServiceDAO {
         TaxiService taxiService;
         String sql = "SELECT * FROM services s JOIN cities c ON s.city_id = c.id WHERE s.id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
 
-            resultSet.next();
-            City city = new City(
-                    resultSet.getInt("city_id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("region"),
-                    resultSet.getBoolean("is_unsupported")
-            );
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                City city = new City(
+                        resultSet.getInt("city_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("region"),
+                        resultSet.getBoolean("is_unsupported")
+                );
 
-            taxiService = new TaxiService(
-                    resultSet.getInt("id"),
-                    city,
-                    resultSet.getString("service_type"),
-                    resultSet.getInt("base_rate"),
-                    resultSet.getBoolean("is_removed")
-            );
+                taxiService = new TaxiService(
+                        resultSet.getInt("id"),
+                        city,
+                        resultSet.getString("service_type"),
+                        resultSet.getInt("base_rate"),
+                        resultSet.getBoolean("is_removed")
+                );
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get TaxiService with id=%d", id));
@@ -79,33 +81,34 @@ public class TaxiServiceController implements TaxiServiceDAO {
         Map<Integer, City> cities = new HashMap<>();
         String sql = "SELECT * FROM services s JOIN cities c ON s.city_id = c.id;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            while (resultSet.next()) {
-                City city;
-                if (!cities.containsKey(resultSet.getInt("city_id"))) {
-                    city = new City(
-                            resultSet.getInt("city_id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("region"),
-                            resultSet.getBoolean("is_unsupported")
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    City city;
+                    if (!cities.containsKey(resultSet.getInt("city_id"))) {
+                        city = new City(
+                                resultSet.getInt("city_id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("region"),
+                                resultSet.getBoolean("is_unsupported")
+                        );
+                        cities.put(city.getId(), city);
+                    } else {
+                        city = cities.get(resultSet.getInt("city_id"));
+                    }
+
+                    TaxiService taxiService = new TaxiService(
+                            resultSet.getInt("id"),
+                            city,
+                            resultSet.getString("service_type"),
+                            resultSet.getInt("base_rate"),
+                            resultSet.getBoolean("is_removed")
                     );
-                    cities.put(city.getId(), city);
-                } else {
-                    city = cities.get(resultSet.getInt("city_id"));
+
+                    taxiServices.add(taxiService);
                 }
-
-                TaxiService taxiService = new TaxiService(
-                        resultSet.getInt("id"),
-                        city,
-                        resultSet.getString("service_type"),
-                        resultSet.getInt("base_rate"),
-                        resultSet.getBoolean("is_removed")
-                );
-
-                taxiServices.add(taxiService);
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -137,16 +140,18 @@ public class TaxiServiceController implements TaxiServiceDAO {
         String sql = "INSERT INTO services (city_id, service_type, base_rate, is_removed) " +
                 "VALUES (?, ?, ?, FALSE);";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             statement.setInt(1, taxiService.getCityId());
             statement.setString(2, taxiService.getServiceType());
             statement.setInt(3, taxiService.getBaseRate());
             statement.executeQuery();
 
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -176,8 +181,8 @@ public class TaxiServiceController implements TaxiServiceDAO {
         String sql = "UPDATE services SET city_id = ?, service_type = ?, " +
                 "base_rate = ?, is_removed = ? WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, taxiService.getCityId());
             statement.setString(2, taxiService.getServiceType());

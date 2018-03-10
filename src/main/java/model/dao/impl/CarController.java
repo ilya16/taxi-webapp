@@ -36,30 +36,32 @@ public class CarController implements CarDAO {
                 "FROM cars c JOIN drivers d ON c.driver_id = d.id " +
                 "WHERE c.id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
 
-            resultSet.next();
-            Driver driver = new Driver(
-                    resultSet.getInt("driver_id"),
-                    resultSet.getString("first_name"),
-                    resultSet.getString("last_name"),
-                    resultSet.getByte("age"),
-                    resultSet.getBoolean("driver_is_blocked")
-            );
+            try (ResultSet resultSet = statement.executeQuery()) {
 
-            car = new Car(
-                    resultSet.getInt(1),
-                    resultSet.getString("serial_number"),
-                    resultSet.getString("model"),
-                    resultSet.getString("color"),
-                    driver,
-                    resultSet.getBoolean("has_child_seat"),
-                    resultSet.getBoolean("car_is_blocked")
-            );
+                resultSet.next();
+                Driver driver = new Driver(
+                        resultSet.getInt("driver_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getByte("age"),
+                        resultSet.getBoolean("driver_is_blocked")
+                );
 
+                car = new Car(
+                        resultSet.getInt(1),
+                        resultSet.getString("serial_number"),
+                        resultSet.getString("model"),
+                        resultSet.getString("color"),
+                        driver,
+                        resultSet.getBoolean("has_child_seat"),
+                        resultSet.getBoolean("car_is_blocked")
+                );
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get Car with id=%d", id));
@@ -84,30 +86,31 @@ public class CarController implements CarDAO {
         String sql = "SELECT *, c.is_blocked AS car_is_blocked, d.is_blocked AS driver_is_blocked " +
                 "FROM cars c JOIN drivers d ON c.driver_id = d.id;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            while (resultSet.next()) {
-                Driver driver = new Driver(
-                        resultSet.getInt("driver_id"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name"),
-                        resultSet.getByte("age"),
-                        resultSet.getBoolean("driver_is_blocked")
-                );
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Driver driver = new Driver(
+                            resultSet.getInt("driver_id"),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name"),
+                            resultSet.getByte("age"),
+                            resultSet.getBoolean("driver_is_blocked")
+                    );
 
-                Car car = new Car(
-                        resultSet.getInt(1),
-                        resultSet.getString("serial_number"),
-                        resultSet.getString("model"),
-                        resultSet.getString("color"),
-                        driver,
-                        resultSet.getBoolean("has_child_seat"),
-                        resultSet.getBoolean("car_is_blocked")
-                );
+                    Car car = new Car(
+                            resultSet.getInt(1),
+                            resultSet.getString("serial_number"),
+                            resultSet.getString("model"),
+                            resultSet.getString("color"),
+                            driver,
+                            resultSet.getBoolean("has_child_seat"),
+                            resultSet.getBoolean("car_is_blocked")
+                    );
 
-                cars.add(car);
+                    cars.add(car);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -140,8 +143,9 @@ public class CarController implements CarDAO {
                 "has_child_seat, is_blocked) " +
                 "VALUES (?, ?, ?, ?, ?, FALSE);";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             statement.setString(1, car.getSerialNumber());
             statement.setString(2, car.getModel());
             statement.setString(3, car.getColor());
@@ -149,9 +153,10 @@ public class CarController implements CarDAO {
             statement.setBoolean(5, car.isHasChildSeat());
             statement.executeQuery();
 
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -181,8 +186,8 @@ public class CarController implements CarDAO {
         String sql = "UPDATE cars SET serial_number = ?, model = ?, color = ?, " +
                 "driver_id = ?, has_child_seat = ?, is_blocked = ? WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, car.getSerialNumber());
             statement.setString(2, car.getModel());

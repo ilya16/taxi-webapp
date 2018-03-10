@@ -35,29 +35,33 @@ public class UserController implements UserDAO {
         User user;
         String sql = "SELECT * FROM users WHERE login = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, login);
-            ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            /* Passwords match check */
-            if (Encryptor.checkPass(password, resultSet.getString("password"))) {
-                user = new User(
-                        resultSet.getInt("id"),
-                        resultSet.getString("login"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name"),
-                        resultSet.getString("password"),
-                        resultSet.getString("phone_number"),
-                        resultSet.getInt("city_id"),
-                        resultSet.getTimestamp("registration_date"),
-                        resultSet.getBoolean("is_blocked")
-                );
-            } else {
-                LOGGER.debug("Password is not correct");
-                throw new DAOException(String.format("Password of User with login=%s is not correct", login));
+            statement.setString(1, login);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+
+                /* Passwords match check */
+                if (Encryptor.checkPass(password, resultSet.getString("password"))) {
+                    user = new User(
+                            resultSet.getInt("id"),
+                            resultSet.getString("login"),
+                            resultSet.getString("first_name"),
+                            resultSet.getString("last_name"),
+                            resultSet.getString("password"),
+                            resultSet.getString("phone_number"),
+                            resultSet.getInt("city_id"),
+                            resultSet.getTimestamp("registration_date"),
+                            resultSet.getBoolean("is_blocked")
+                    );
+                } else {
+                    LOGGER.debug("Password is not correct");
+                    throw new DAOException(String.format("Password of User with login=%s is not correct", login));
+                }
             }
+
         } catch (SQLException e) {
             LOGGER.error(e);
             throw new DAOException(String.format("Cannot get User with login=%s", login));
@@ -82,23 +86,25 @@ public class UserController implements UserDAO {
         User user;
         String sql = "SELECT * FROM users WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            resultSet.next();
-            user = new User(
-                    resultSet.getInt("id"),
-                    resultSet.getString("login"),
-                    resultSet.getString("first_name"),
-                    resultSet.getString("last_name"),
-                    resultSet.getString("password"),
-                    resultSet.getString("phone_number"),
-                    resultSet.getInt("city_id"),
-                    resultSet.getTimestamp("registration_date"),
-                    resultSet.getBoolean("is_blocked")
-            );
+            statement.setInt(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                user = new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("login"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone_number"),
+                        resultSet.getInt("city_id"),
+                        resultSet.getTimestamp("registration_date"),
+                        resultSet.getBoolean("is_blocked")
+                );
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new DAOException(String.format("Cannot get User with id=%d", id));
@@ -122,22 +128,23 @@ public class UserController implements UserDAO {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            resultSet.next();
-            users.add(new User(
-                    resultSet.getInt("id"),
-                    resultSet.getString("login"),
-                    resultSet.getString("first_name"),
-                    resultSet.getString("last_name"),
-                    resultSet.getString("password"),
-                    resultSet.getString("phone_number"),
-                    resultSet.getInt("city_id"),
-                    resultSet.getTimestamp("registration_date"),
-                    resultSet.getBoolean("is_blocked"))
-            );
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                users.add(new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("login"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phone_number"),
+                        resultSet.getInt("city_id"),
+                        resultSet.getTimestamp("registration_date"),
+                        resultSet.getBoolean("is_blocked"))
+                );
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
             throw new DAOException("Cannot get all users from the database.");
@@ -168,8 +175,8 @@ public class UserController implements UserDAO {
         String sql = "INSERT INTO users (login, first_name, last_name, password, is_blocked) " +
                 "VALUES (?, ?, ?, ?, FALSE);";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, user.getLogin());
             statement.setString(2, user.getFirstName());
@@ -177,9 +184,10 @@ public class UserController implements UserDAO {
             statement.setString(4, Encryptor.hashPassword(user.getPassword()));
             statement.executeUpdate();
 
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -209,8 +217,8 @@ public class UserController implements UserDAO {
         String sql = "UPDATE users SET first_name = ?, last_name = ?, " +
                 "phone_number = ?, city_id = ?, is_blocked = ? WHERE id = ?;";
 
-        try (Connection connection = DataSourceFactory.getDataSource().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = DataSourceFactory.getDataSource().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
