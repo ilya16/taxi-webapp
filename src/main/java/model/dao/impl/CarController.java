@@ -42,25 +42,8 @@ public class CarController implements CarDAO {
             statement.setInt(1, id);
 
             try (ResultSet resultSet = statement.executeQuery()) {
-
                 resultSet.next();
-                Driver driver = new Driver(
-                        resultSet.getInt("driver_id"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name"),
-                        resultSet.getByte("age"),
-                        resultSet.getBoolean("driver_is_blocked")
-                );
-
-                car = new Car(
-                        resultSet.getInt(1),
-                        resultSet.getString("serial_number"),
-                        resultSet.getString("model"),
-                        resultSet.getString("color"),
-                        driver,
-                        resultSet.getBoolean("has_child_seat"),
-                        resultSet.getBoolean("car_is_blocked")
-                );
+                car = buildCarEntity(resultSet);
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -91,25 +74,7 @@ public class CarController implements CarDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    Driver driver = new Driver(
-                            resultSet.getInt("driver_id"),
-                            resultSet.getString("first_name"),
-                            resultSet.getString("last_name"),
-                            resultSet.getByte("age"),
-                            resultSet.getBoolean("driver_is_blocked")
-                    );
-
-                    Car car = new Car(
-                            resultSet.getInt(1),
-                            resultSet.getString("serial_number"),
-                            resultSet.getString("model"),
-                            resultSet.getString("color"),
-                            driver,
-                            resultSet.getBoolean("has_child_seat"),
-                            resultSet.getBoolean("car_is_blocked")
-                    );
-
-                    cars.add(car);
+                    cars.add(buildCarEntity(resultSet));
                 }
             }
         } catch (SQLException e) {
@@ -239,5 +204,32 @@ public class CarController implements CarDAO {
     @Override
     public int delete(Car car) {
         return 0;
+    }
+
+    /**
+     * Builds a Car object from row in resultSet.
+     *
+     * @param resultSet         ResultsSet object
+     * @return                  Car object
+     * @throws SQLException     if a column name is invalid
+     */
+    private Car buildCarEntity(ResultSet resultSet) throws SQLException {
+        Driver driver = new Driver(
+                resultSet.getInt("driver_id"),
+                resultSet.getString("first_name"),
+                resultSet.getString("last_name"),
+                resultSet.getByte("age"),
+                resultSet.getBoolean("driver_is_blocked")
+        );
+
+        return new Car(
+                resultSet.getInt(1),
+                resultSet.getString("serial_number"),
+                resultSet.getString("model"),
+                resultSet.getString("color"),
+                driver,
+                resultSet.getBoolean("has_child_seat"),
+                resultSet.getBoolean("car_is_blocked")
+        );
     }
 }

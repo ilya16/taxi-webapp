@@ -285,7 +285,7 @@ public class TaxiOrderingServiceImpl implements TaxiOrderingService {
                 .filter(x -> !x.isBlocked() && (!childSeat || x.isHasChildSeat()))
                 .collect(Collectors.toList());
 
-        if (cars.size() == 0) {
+        if (cars.isEmpty()) {
             LOGGER.info("No cars available for the given order parameters");
             throw new ServiceException("No cars available for the given order parameters");
         }

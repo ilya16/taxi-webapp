@@ -9,6 +9,10 @@ import org.apache.tomcat.jdbc.pool.PoolProperties;
 public class DataSourceFactory {
     private static DataSource datasource = new DataSource();
 
+    private DataSourceFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     static {
         PoolProperties p = new PoolProperties();
         p.setUrl("jdbc:postgresql://localhost:5432/taxi-service");

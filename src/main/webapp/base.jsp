@@ -12,23 +12,23 @@
     <title>Title</title>
 </head>
 <style>
-    li {
+    li#menu {
         display: inline;
     }
 </style>
 <body>
 <ul>
-    <li><a href=".">Home</a></li>
-    <li><a href="order-taxi">Order Taxi</a></li>
-    <li><a href="history">History</a></li>
+    <li id="menu"><a href=".">Home</a></li>
+    <li id="menu"><a href="order-taxi">Order Taxi</a></li>
+    <li id="menu"><a href="history">History</a></li>
     <c:choose>
         <c:when test="${sessionScope.userLogin == null}">
-            <li><a href="login">Sign In</a></li>
-            <li><a href="sign-up">Sign Up</a></li>
+            <li id="menu"><a href="login">Sign In</a></li>
+            <li id="menu"><a href="sign-up">Sign Up</a></li>
         </c:when>
         <c:otherwise>
-            <li>Hi, <i>${sessionScope.userLogin}</i>!</li>
-            <li><a href="logout">Log Out</a></li>
+            <li id="menu">Hi, <i>${sessionScope.userLogin}</i>!</li>
+            <li id="menu"><a href="logout">Log Out</a></li>
         </c:otherwise>
     </c:choose>
 </ul>

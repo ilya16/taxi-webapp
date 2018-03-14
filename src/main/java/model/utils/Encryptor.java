@@ -7,6 +7,10 @@ import org.mindrot.jbcrypt.BCrypt;
  */
 public class Encryptor {
 
+    private Encryptor() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Hashes text passwords.
      *

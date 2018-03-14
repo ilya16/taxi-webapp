@@ -29,7 +29,12 @@ public class RegistrationServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOGGER.info("RegistrationServlet doGet is executing");
 
-        req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
+        try {
+            req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
+        } catch (ServletException | IOException e) {
+            LOGGER.error(e);
+            throw e;
+        }
     }
 
     @Override
@@ -46,15 +51,15 @@ public class RegistrationServlet extends HttpServlet {
         req.setAttribute("firstName", firstName);
         req.setAttribute("lastName", lastName);
 
+        boolean registrationSuccess = false;
+
         if (password.length() < 6) {
             req.getSession().setAttribute("responseMessage",
                     "Password should be at least 6 symbols long");
-            req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
         }
         else if (!password.equals(passwordConfirm)) {
             req.getSession().setAttribute("responseMessage",
                     "Passwords do not match");
-            req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
         }
         else {
             try {
@@ -65,13 +70,29 @@ public class RegistrationServlet extends HttpServlet {
 
                 req.getSession().setAttribute("responseMessage",
                         "Registration was successful! Sign into the System below:");
-                resp.sendRedirect("/login");
+
+                registrationSuccess = true;
             } catch (ServiceException e) {
                 LOGGER.error(e);
 
                 req.getSession().setAttribute("responseMessage",
                         String.format("Login \"%s\" is already taken, enter another one", login));
+            }
+        }
+
+        if (registrationSuccess) {
+            try {
+                resp.sendRedirect("/login");
+            } catch (IOException e) {
+                LOGGER.error(e);
+                throw e;
+            }
+        } else {
+            try {
                 req.getRequestDispatcher("/sign-up.jsp").forward(req, resp);
+            } catch (ServletException | IOException e) {
+                LOGGER.error(e);
+                throw e;
             }
         }
     }

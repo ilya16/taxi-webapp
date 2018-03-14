@@ -28,7 +28,13 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOGGER.info("LoginServlet doGet is executing");
-        req.getRequestDispatcher("login.jsp").forward(req, resp);
+
+        try {
+            req.getRequestDispatcher("login.jsp").forward(req, resp);
+        } catch (ServletException | IOException e) {
+            LOGGER.error(e);
+            throw e;
+        }
     }
 
     @Override
@@ -45,12 +51,22 @@ public class LoginServlet extends HttpServlet {
 
             req.getSession().setAttribute("userLogin", login);
             req.getSession().setAttribute("userId", user.getId());
+
             resp.sendRedirect(req.getContextPath() + "/order-taxi");
         } catch (ServiceException e) {
             LOGGER.error(e);
             req.getSession().setAttribute("responseMessage",
                     "Incorrect login/password pair. Please, try again.");
-            req.getRequestDispatcher("/login.jsp").forward(req, resp);
+
+            try {
+                req.getRequestDispatcher("/login.jsp").forward(req, resp);
+            } catch (ServletException | IOException e1) {
+                LOGGER.error(e1);
+                throw e1;
+            }
+        } catch (IOException e) {
+            LOGGER.error(e);
+            throw e;
         }
     }
 }

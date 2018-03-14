@@ -36,24 +36,23 @@ public class OrderHistoryServlet extends HttpServlet {
         LOGGER.info("OrderHistoryServlet doGet is executing");
 
         Integer userId = (Integer)req.getSession().getAttribute("userId");
+        List<Ride> userRides = getAllUserRides(userId);
 
-        List<Ride> userRides;
-        try {
-            userRides = taxiOrderingService.getAllUserRides(userId);
-        } catch (ServiceException e) {
-            LOGGER.error(e);
-            userRides = new ArrayList<>();
-        }
         req.setAttribute("rides", userRides);
 
         try {
-            User user = userService.getUser((Integer)req.getSession().getAttribute("userId"));
+            User user = userService.getUser(userId);
             req.setAttribute("user", user);
         } catch (ServiceException e) {
             LOGGER.error(e);
         }
 
-        req.getRequestDispatcher("/history.jsp").forward(req, resp);
+        try {
+            req.getRequestDispatcher("/history.jsp").forward(req, resp);
+        } catch (ServletException | IOException e) {
+            LOGGER.error(e);
+            throw e;
+        }
     }
 
     @Override
@@ -75,18 +74,28 @@ public class OrderHistoryServlet extends HttpServlet {
                         "An error occurred while updating the status. Please, try again!");
             }
 
-            List<Ride> userRides;
-            try {
-                userRides = taxiOrderingService.getAllUserRides(
-                        (Integer)req.getSession().getAttribute("userId")
-                );
-            } catch (ServiceException e) {
-                LOGGER.error(e);
-                userRides = new ArrayList<>();
-            }
+            Integer userId = (Integer)req.getSession().getAttribute("userId");
+            List<Ride> userRides = getAllUserRides(userId);
+
             req.setAttribute("rides", userRides);
 
-            req.getRequestDispatcher("/history.jsp").forward(req, resp);
+            try {
+                req.getRequestDispatcher("/history.jsp").forward(req, resp);
+            } catch (ServletException | IOException e) {
+                LOGGER.error(e);
+                throw e;
+            }
         }
+    }
+
+    private List<Ride> getAllUserRides(Integer userId) {
+        List<Ride> userRides;
+        try {
+            userRides = taxiOrderingService.getAllUserRides(userId);
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            userRides = new ArrayList<>();
+        }
+        return userRides;
     }
 }

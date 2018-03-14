@@ -65,7 +65,12 @@ public class TaxiOrderingServlet extends HttpServlet {
             LOGGER.error(e);
         }
 
-        req.getRequestDispatcher("/order-taxi.jsp").forward(req, resp);
+        try {
+            req.getRequestDispatcher("/order-taxi.jsp").forward(req, resp);
+        } catch (ServletException | IOException e) {
+            LOGGER.error(e);
+            throw e;
+        }
     }
 
     @Override
@@ -129,7 +134,13 @@ public class TaxiOrderingServlet extends HttpServlet {
                                 "We are sorry, probably, no drivers are busy right now. Please, try again later."
                 );
             }
-            req.getRequestDispatcher("/order-taxi.jsp").forward(req, resp);
+
+            try {
+                req.getRequestDispatcher("/order-taxi.jsp").forward(req, resp);
+            } catch (ServletException | IOException e) {
+                LOGGER.error(e);
+                throw e;
+            }
         }
     }
 }
