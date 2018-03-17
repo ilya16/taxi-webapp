@@ -7,7 +7,10 @@ the Industrial Java Programming course at [Innopolis University](https://univers
 
 ## Description
 Branch [servlet-api-app](https://github.com/ilya16/taxi-webapp/tree/servlet-api-app) contains the solution 
-written using basic Java Servlets.
+written with Java Servlets.
+
+Branch [spring-mvc-app](https://github.com/ilya16/taxi-webapp/tree/spring-mvc-app) contains the solution 
+written with Spring MVC framework.
 
 To build the project, clone the repository and build the source codes using Gradle.
 
