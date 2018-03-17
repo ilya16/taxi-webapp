@@ -216,10 +216,10 @@ ALTER SEQUENCE rides_id_seq OWNED BY rides.id;
 
 
 --
--- Name: services; Type: TABLE; Schema: public; Owner: ilyaborovik
+-- Name: ru.innopolis.services; Type: TABLE; Schema: public; Owner: ilyaborovik
 --
 
-CREATE TABLE services (
+CREATE TABLE ru.innopolis.services (
     id integer NOT NULL,
     city_id integer NOT NULL,
     service_type service_type DEFAULT 'economy'::service_type NOT NULL,
@@ -228,7 +228,7 @@ CREATE TABLE services (
 );
 
 
-ALTER TABLE services OWNER TO ilyaborovik;
+ALTER TABLE ru.innopolis.services OWNER TO ilyaborovik;
 
 --
 -- Name: services_id_seq; Type: SEQUENCE; Schema: public; Owner: ilyaborovik
@@ -248,7 +248,7 @@ ALTER TABLE services_id_seq OWNER TO ilyaborovik;
 -- Name: services_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ilyaborovik
 --
 
-ALTER SEQUENCE services_id_seq OWNED BY services.id;
+ALTER SEQUENCE services_id_seq OWNED BY ru.innopolis.services.id;
 
 
 --
@@ -320,10 +320,10 @@ ALTER TABLE ONLY rides ALTER COLUMN id SET DEFAULT nextval('rides_id_seq'::regcl
 
 
 --
--- Name: services id; Type: DEFAULT; Schema: public; Owner: ilyaborovik
+-- Name: ru.innopolis.services id; Type: DEFAULT; Schema: public; Owner: ilyaborovik
 --
 
-ALTER TABLE ONLY services ALTER COLUMN id SET DEFAULT nextval('services_id_seq'::regclass);
+ALTER TABLE ONLY ru.innopolis.services ALTER COLUMN id SET DEFAULT nextval('services_id_seq'::regclass);
 
 
 --
@@ -415,10 +415,10 @@ SELECT pg_catalog.setval('rides_id_seq', 8, true);
 
 
 --
--- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: ilyaborovik
+-- Data for Name: ru.innopolis.services; Type: TABLE DATA; Schema: public; Owner: ilyaborovik
 --
 
-COPY services (id, city_id, service_type, base_rate, is_removed) FROM stdin;
+COPY ru.innopolis.services (id, city_id, service_type, base_rate, is_removed) FROM stdin;
 3	2	economy	49	f
 4	2	comfort	99	f
 5	2	business	249	f
@@ -486,10 +486,10 @@ ALTER TABLE ONLY rides
 
 
 --
--- Name: services services_pkey; Type: CONSTRAINT; Schema: public; Owner: ilyaborovik
+-- Name: ru.innopolis.services services_pkey; Type: CONSTRAINT; Schema: public; Owner: ilyaborovik
 --
 
-ALTER TABLE ONLY services
+ALTER TABLE ONLY ru.innopolis.services
     ADD CONSTRAINT services_pkey PRIMARY KEY (id);
 
 
@@ -541,14 +541,14 @@ CREATE UNIQUE INDEX rides_id_user_id_car_id_service_id_uindex ON rides USING btr
 -- Name: services_id_city_id_is_removed_uindex; Type: INDEX; Schema: public; Owner: ilyaborovik
 --
 
-CREATE UNIQUE INDEX services_id_city_id_is_removed_uindex ON services USING btree (id, city_id, is_removed);
+CREATE UNIQUE INDEX services_id_city_id_is_removed_uindex ON ru.innopolis.services USING btree (id, city_id, is_removed);
 
 
 --
 -- Name: services_id_uindex; Type: INDEX; Schema: public; Owner: ilyaborovik
 --
 
-CREATE UNIQUE INDEX services_id_uindex ON services USING btree (id);
+CREATE UNIQUE INDEX services_id_uindex ON ru.innopolis.services USING btree (id);
 
 
 --
@@ -572,7 +572,7 @@ ALTER TABLE ONLY rides
 --
 
 ALTER TABLE ONLY rides
-    ADD CONSTRAINT rides_services_id_fk FOREIGN KEY (service_id) REFERENCES services(id) ON UPDATE CASCADE;
+    ADD CONSTRAINT rides_services_id_fk FOREIGN KEY (service_id) REFERENCES ru.innopolis.services(id) ON UPDATE CASCADE;
 
 
 --
@@ -584,10 +584,10 @@ ALTER TABLE ONLY rides
 
 
 --
--- Name: services services_cities_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: ilyaborovik
+-- Name: ru.innopolis.services services_cities_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: ilyaborovik
 --
 
-ALTER TABLE ONLY services
+ALTER TABLE ONLY ru.innopolis.services
     ADD CONSTRAINT services_cities_id_fk FOREIGN KEY (city_id) REFERENCES cities(id) ON UPDATE CASCADE;
 
 
