@@ -1,8 +1,10 @@
 package ru.innopolis.services;
 
+import org.junit.Rule;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import ru.innopolis.model.DAOException;
 import ru.innopolis.model.dao.api.UserDAO;
-import ru.innopolis.model.dao.impl.UserDAOImpl;
 import ru.innopolis.model.pojo.User;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
@@ -10,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import ru.innopolis.services.api.UserService;
 import ru.innopolis.services.impl.UserServiceImpl;
@@ -18,7 +19,6 @@ import ru.innopolis.services.impl.UserServiceImpl;
 import java.sql.Timestamp;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
@@ -31,12 +31,13 @@ public class UserServiceTest {
     @Mock
     private UserDAO userControllerMock;
 
-    @InjectMocks
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     private UserService userService;
 
     @Before
     public void setUp() {
-        userControllerMock = mock(UserDAOImpl.class);
         userService = new UserServiceImpl(userControllerMock);
     }
 

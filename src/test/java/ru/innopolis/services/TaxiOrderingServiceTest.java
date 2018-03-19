@@ -1,8 +1,10 @@
 package ru.innopolis.services;
 
+import org.junit.Rule;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import ru.innopolis.model.DAOException;
 import ru.innopolis.model.dao.api.*;
-import ru.innopolis.model.dao.impl.*;
 import ru.innopolis.model.pojo.Car;
 import ru.innopolis.model.pojo.Ride;
 import ru.innopolis.model.pojo.TaxiService;
@@ -13,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import ru.innopolis.services.api.TaxiOrderingService;
 import ru.innopolis.services.impl.TaxiOrderingServiceImpl;
@@ -41,17 +42,12 @@ public class TaxiOrderingServiceTest {
     @Mock private CarDAO carControllerMock;
     @Mock private UserDAO userControllerMock;
 
-    @InjectMocks
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     private TaxiOrderingService taxiOrderingService;
 
     @Before
     public void setUp() {
-        taxiServiceControllerMock = mock(TaxiServiceDAOImpl.class);
-        cityControllerMock = mock(CityDAOImpl.class);
-        rideControllerMock = mock(RideDAOImpl.class);
-        carControllerMock = mock(CarDAOImpl.class);
-        userControllerMock = mock(UserDAOImpl.class);
-
         taxiOrderingService = new TaxiOrderingServiceImpl(
                 taxiServiceControllerMock,
                 cityControllerMock,
