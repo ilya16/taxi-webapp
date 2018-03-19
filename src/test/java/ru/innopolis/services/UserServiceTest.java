@@ -7,13 +7,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import ru.innopolis.model.DAOException;
 import ru.innopolis.model.dao.api.UserDAO;
-import ru.innopolis.model.dao.impl.UserDAOImpl;
 import ru.innopolis.model.pojo.User;
 import ru.innopolis.services.api.UserService;
 import ru.innopolis.services.impl.UserServiceImpl;
@@ -21,7 +19,6 @@ import ru.innopolis.services.impl.UserServiceImpl;
 import java.sql.Timestamp;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
