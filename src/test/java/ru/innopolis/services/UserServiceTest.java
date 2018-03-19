@@ -5,9 +5,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import ru.innopolis.model.DAOException;
 import ru.innopolis.model.dao.api.UserDAO;
 import ru.innopolis.model.dao.impl.UserDAOImpl;
@@ -31,12 +34,13 @@ public class UserServiceTest {
     @Mock
     private UserDAO userControllerMock;
 
-    @InjectMocks
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     private UserService userService;
 
     @Before
     public void setUp() {
-        userControllerMock = mock(UserDAOImpl.class);
         userService = new UserServiceImpl(userControllerMock);
     }
 

@@ -1,5 +1,11 @@
 package ru.innopolis.forms;
 
+/**
+ * Registration form.
+ *
+ * @author      Ilya Borovik
+ * @version     1.0
+ */
 public class SignUpForm {
 
     private String login;

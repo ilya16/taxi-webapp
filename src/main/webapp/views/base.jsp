@@ -18,7 +18,7 @@
 </style>
 <body>
 <ul>
-    <li id="menu"><a href="../">Home</a></li>
+    <li id="menu"><a href="/">Home</a></li>
     <li id="menu"><a href="order-taxi">Order Taxi</a></li>
     <li id="menu"><a href="history">History</a></li>
     <c:choose>

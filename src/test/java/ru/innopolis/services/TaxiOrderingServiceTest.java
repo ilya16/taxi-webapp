@@ -5,9 +5,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import ru.innopolis.model.DAOException;
 import ru.innopolis.model.dao.api.*;
 import ru.innopolis.model.dao.impl.*;
@@ -41,17 +44,12 @@ public class TaxiOrderingServiceTest {
     @Mock private CarDAO carControllerMock;
     @Mock private UserDAO userControllerMock;
 
-    @InjectMocks
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     private TaxiOrderingService taxiOrderingService;
 
     @Before
     public void setUp() {
-        taxiServiceControllerMock = mock(TaxiServiceDAOImpl.class);
-        cityControllerMock = mock(CityDAOImpl.class);
-        rideControllerMock = mock(RideDAOImpl.class);
-        carControllerMock = mock(CarDAOImpl.class);
-        userControllerMock = mock(UserDAOImpl.class);
-
         taxiOrderingService = new TaxiOrderingServiceImpl(
                 taxiServiceControllerMock,
                 cityControllerMock,

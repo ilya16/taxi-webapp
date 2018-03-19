@@ -4,6 +4,10 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +18,8 @@ import ru.innopolis.services.ServiceException;
 import ru.innopolis.services.api.UserService;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Controller
 public class AuthorizationController {
@@ -53,8 +59,19 @@ public class AuthorizationController {
 
             LOGGER.info(String.format("User with login=%s has successfully authorized in the system", login));
 
-//            session.setAttribute("userLogin", login);
+            session.setAttribute("userLogin", login);
             session.setAttribute("userId", user.getId());
+
+            Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+            grantedAuthorities.add(() -> "ROLE_USER");
+
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    user.getLogin(),
+                    user.getPassword(),
+                    grantedAuthorities
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
             modelAndView.setViewName("redirect:/order-taxi");
         } catch (ServiceException e) {
@@ -71,6 +88,8 @@ public class AuthorizationController {
     @GetMapping(value = "/logout")
     ModelAndView logoutGet() {
         LOGGER.info("AuthorizationController: Logout page GET");
+
+        SecurityContextHolder.getContext().setAuthentication(null);
 
         return new ModelAndView("index");
     }

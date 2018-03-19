@@ -1,5 +1,11 @@
 package ru.innopolis.forms;
 
+/**
+ * Taxi ordering form.
+ *
+ * @author      Ilya Borovik
+ * @version     1.0
+ */
 public class TaxiOrderForm {
 
     private int cityId;

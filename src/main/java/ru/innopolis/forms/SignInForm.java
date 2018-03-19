@@ -1,5 +1,11 @@
 package ru.innopolis.forms;
 
+/**
+ * Authorization form.
+ *
+ * @author      Ilya Borovik
+ * @version     1.0
+ */
 public class SignInForm {
 
     private String login;
