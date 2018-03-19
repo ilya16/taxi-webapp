@@ -15,6 +15,12 @@ import ru.innopolis.model.pojo.User;
 import ru.innopolis.services.ServiceException;
 import ru.innopolis.services.api.UserService;
 
+/**
+ * Processes user registration requests.
+ *
+ * @author      Ilya Borovik
+ * @version     1.0
+ */
 @Controller
 public class RegistrationController {
     static {
@@ -26,6 +32,12 @@ public class RegistrationController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Processes GET requests for the sign-up page.
+     *
+     * @param signUpForm        SignUpForm object
+     * @return                  ModelAndView object with sign-up view
+     */
     @GetMapping(value = "/sign-up")
     ModelAndView signUpGet(SignUpForm signUpForm) {
         LOGGER.info("RegistrationController: Login page GET");
@@ -33,6 +45,16 @@ public class RegistrationController {
         return new ModelAndView("sign-up");
     }
 
+    /**
+     * Processes POST requests for the sign-up page.
+     * Processes authorization of a user in the system.
+     *
+     * @param signUpForm        SignInForm object with login credentials
+     * @param bindingResult     request BindingResult object
+     * @return                  ModelAndView object
+     *                          with login view if authorization was unsuccessful
+     *                          and sign-up view otherwise
+     */
     @PostMapping(value = "/sign-up")
     ModelAndView signUpPost(@ModelAttribute SignUpForm signUpForm, BindingResult bindingResult) {
         LOGGER.info("RegistrationController: Login page POST");

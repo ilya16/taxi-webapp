@@ -25,6 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Processes taxi service requests.
+ *
+ * @author      Ilya Borovik
+ * @version     1.0
+ */
 @Controller
 public class TaxiServiceController {
     static {
@@ -39,6 +45,13 @@ public class TaxiServiceController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Processes GET requests for the taxi ordering page.
+     *
+     * @param taxiOrderForm     TaxiOrderForm object
+     * @param session           HTTPSession object
+     * @return                  ModelAndView object with order-taxi view
+     */
     @GetMapping(value = "/order-taxi")
     ModelAndView orderTaxiGet(TaxiOrderForm taxiOrderForm, HttpSession session) {
         LOGGER.info("TaxiServiceController: Order-Taxi page GET");
@@ -75,6 +88,15 @@ public class TaxiServiceController {
         return modelAndView;
     }
 
+    /**
+     * Processes POST requests for the taxi ordering page.
+     *
+     * @param taxiOrderForm     TaxiOrderForm object
+     * @param bindingResult     request BindingResult object
+     * @param session           HTTPSession object
+     * @return                  ModelAndView object with order-taxi view
+     *                          and corresponding error/success messages
+     */
     @PostMapping(value = "/order-taxi")
     ModelAndView orderTaxiPost(TaxiOrderForm taxiOrderForm, BindingResult bindingResult, HttpSession session) {
         LOGGER.info("TaxiServiceController: Order-Taxi page POST");
@@ -133,6 +155,13 @@ public class TaxiServiceController {
         return modelAndView;
     }
 
+    /**
+     * Processes GET requests for the order history page.
+     *
+     * @param cancelOrderForm   CancelOrderForm object
+     * @param session           HTTPSession object
+     * @return                  ModelAndView object with history view
+     */
     @GetMapping(value = "/history")
     ModelAndView orderHistoryGet(CancelOrderForm cancelOrderForm, HttpSession session) {
         LOGGER.info("TaxiServiceController: Order-History page GET");
@@ -154,6 +183,14 @@ public class TaxiServiceController {
         return modelAndView;
     }
 
+    /**
+     * Processes POST requests for the order history page.
+     *
+     * @param cancelOrderForm   CancelOrderForm object
+     * @param bindingResult     request BindingResult object
+     * @param session           HTTPSession object
+     * @return                  ModelAndView object with history view
+     */
     @PostMapping(value = "/history")
     ModelAndView orderHistoryPost(CancelOrderForm cancelOrderForm, BindingResult bindingResult, HttpSession session) {
         LOGGER.info("TaxiServiceController: Order-History page POST");
@@ -192,6 +229,12 @@ public class TaxiServiceController {
         return modelAndView;
     }
 
+    /**
+     * Returns a list of all user rides (orders).
+     *
+     * @param userId        user identifier
+     * @return              list of all user rides
+     */
     private List<Ride> getAllUserRides(Integer userId) {
         List<Ride> userRides;
         try {

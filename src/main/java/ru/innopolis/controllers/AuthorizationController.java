@@ -21,6 +21,12 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Processes user authorization requests.
+ *
+ * @author      Ilya Borovik
+ * @version     1.0
+ */
 @Controller
 public class AuthorizationController {
     static {
@@ -32,6 +38,12 @@ public class AuthorizationController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Processes GET requests for the login page.
+     *
+     * @param signInForm        SignInForm object
+     * @return                  ModelAndView object with login view
+     */
     @GetMapping(value = "/login")
     ModelAndView loginGet(SignInForm signInForm) {
         LOGGER.info("AuthorizationController: Login page GET");
@@ -39,6 +51,17 @@ public class AuthorizationController {
         return new ModelAndView("login");
     }
 
+    /**
+     * Processes POST requests for the login page.
+     * Processes authorization of a user in the system.
+     *
+     * @param signInForm        SignInForm object with login credentials
+     * @param bindingResult     request BindingResult object
+     * @param session           HTTPSession object
+     * @return                  ModelAndView object
+     *                          with order-taxi view if authorization was unsuccessful
+     *                          and login view otherwise
+     */
     @PostMapping(value = "/login")
     ModelAndView loginPost(@ModelAttribute SignInForm signInForm, BindingResult bindingResult, HttpSession session) {
         LOGGER.info("AuthorizationController: Login page POST");
@@ -85,6 +108,12 @@ public class AuthorizationController {
         return modelAndView;
     }
 
+    /**
+     * Processes GET requests for the logout page.
+     * Redirects to the home page.
+     *
+     * @return                  ModelAndView object with index view
+     */
     @GetMapping(value = "/logout")
     ModelAndView logoutGet() {
         LOGGER.info("AuthorizationController: Logout page GET");
